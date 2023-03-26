@@ -1,4 +1,4 @@
-import CoreSim from "./CoreSim";
+import CpuSim from "./CpuSim";
 
 /* Handles opening up a file  */
 function handleFile(input) {
