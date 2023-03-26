@@ -1,3 +1,5 @@
+import CoreSim from "./CoreSim";
+
 /* Handles opening up a file  */
 function handleFile(input) {
   const file = input.target.files[0];

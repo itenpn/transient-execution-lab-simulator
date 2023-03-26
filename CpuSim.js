@@ -1,3 +1,6 @@
+import MemorySim from "./MemorySim";
+import CoreSim from "./CoreSim";
+
 export default class CpuSim {
   constructor(programs) {
     this.num_cores = programs.length;
