@@ -1,4 +1,4 @@
-import * as ops from "./ISAOperations";
+import * as ops from "./Operations";
 
 const INSTRUCTION_CLASS = {
   MEMORY: "MEMORY",
