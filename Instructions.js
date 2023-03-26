@@ -131,7 +131,7 @@ const INSTRUCTIONS = {
     name: "nop",
     cycles: 1,
     class: OTHER,
-    inputs: [{ dependency: READ, allowed_types: [REGISTER, CONSTANT] }], // NICK: Here's allowing to specify a number of cycles to wait for a NOP (like)
+    inputs: [{ dependency: READ, allowed_types: [REGISTER, CONSTANT] }],
   },
   FAULT: {
     name: "fault",
@@ -177,7 +177,7 @@ const INSTRUCTIONS = {
     cycles: 10,
     class: MEMORY,
     inputs: [
-      { dependency: READ, allowed_types: [CONSTANT, REGISTER] }, // NICK: I figured it's OK to allow the user to store a constant value at a constant address, so I changed this input to also be [CONSTANT, REGISTER]
+      { dependency: READ, allowed_types: [CONSTANT, REGISTER] },
       { dependency: READ, allowed_types: [CONSTANT, REGISTER] },
     ],
   },
@@ -185,7 +185,7 @@ const INSTRUCTIONS = {
     name: "loadsecret",
     cycles: 1,
     class: MEMORY,
-    inputs: [{ dependency: READ, allowed_types: [CONSTANT, REGISTER] }], // NICK: I figured it'd be easier for you if loadsecret was just like a normal load, so I changed the input type here to match a normal load
+    inputs: [{ dependency: READ, allowed_types: [CONSTANT] }],
   },
   JMPIFZERO: {
     name: "jmpifzero",
