@@ -1,4 +1,4 @@
-export default class CoreSim {
+class CoreSim {
   constructor(programStream, labels, memorySim, pid, secret) {
     this.programStream = programStream;
     this.labels = labels;

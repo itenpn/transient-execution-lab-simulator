@@ -1,24 +1,22 @@
-;insert key into cache
+;something
+
 exec victim 
 
-;initialize looping condition
-set 0xff, R1 
-set 0x1, R2 
+copy 0xff, R1 
+copy 0x1, R2 
 
-;start looping through the cache
 label start_loop 
 
-;flush and reload
 flush R1 
 exec p0 
-clocktime R3 
-load R1 
-clocktime R4 
-sub R3, R4 
-set 0x1, R3 
-sub R3, R4 
-jumpifzero R4, end_loop 
-sub R2, R1 
-jumpifzero R1, start_loop 
+cycletime R3 
+load R1, R7 
+cycletime R4 
+sub R3, R4, R4
+copy 0x1, R3 
+sub R3, R4, R4
+jmpifzero R4, end_loop 
+sub R2, R1, R1
+jmpifzero R1, start_loop 
 label end_loop
-check R1 
+checksecret R1 

@@ -2,7 +2,7 @@
     This file is a series of handlers for each instruction. Divided between memory, branch, math, and other instructions
 */
 
-import INSTRUCTION_INPUT from "./Instructions";
+// import INSTRUCTION_INPUT from "./Instructions";
 
 //MEMORY INSTRUCTIONS
 function handleFlush(
@@ -273,27 +273,27 @@ function handleExec(params, readReg, writeReg, cycle, secret, execProgram) {
   execProgram(prog);
 }
 
-export {
-  handleAdd,
-  handleCheck,
-  handleCopy,
-  handleCycleTime,
-  handleAnd,
-  handleDiv,
-  handleExec,
-  handleFault,
-  handleFlush,
-  handleJmp,
-  handleJmpIfNotZero,
-  handleJmpIfZero,
-  handleLoad,
-  handleLoadSecret,
-  handleMul,
-  handleNop,
-  handleOr,
-  handleRet,
-  handleShiftL,
-  handleShiftR,
-  handleStore,
-  handleSub,
-};
+// export {
+//   handleAdd,
+//   handleCheck,
+//   handleCopy,
+//   handleCycleTime,
+//   handleAnd,
+//   handleDiv,
+//   handleExec,
+//   handleFault,
+//   handleFlush,
+//   handleJmp,
+//   handleJmpIfNotZero,
+//   handleJmpIfZero,
+//   handleLoad,
+//   handleLoadSecret,
+//   handleMul,
+//   handleNop,
+//   handleOr,
+//   handleRet,
+//   handleShiftL,
+//   handleShiftR,
+//   handleStore,
+//   handleSub,
+// };

@@ -2,7 +2,7 @@ const MAIN_MEMORY_SIZE = 1024;
 const CACHE_SIZE = 256;
 const PROCESS_MEM_START = 0x1000;
 
-export default class MemorySim {
+class MemorySim {
   constructor(num_cores, secret) {
     this.cache_rep = new Int8Array(CACHE_SIZE); //The cache used between processes
     this.mem_rep = new Int8Array(MAIN_MEMORY_SIZE * num_cores); //The main memory representation

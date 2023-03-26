@@ -1,12 +1,21 @@
-import MemorySim from "./MemorySim";
-import CoreSim from "./CoreSim";
-
-export default class CpuSim {
+class CpuSim {
   constructor(programs) {
     this.num_cores = programs.length;
     this.programList = programs;
+    this.secret = Math.floor(Math.random() * 0xff);
     this.memory = new MemorySim(this.num_cores);
     this.cycle = 0;
+
+    this.cores = this.programList.map(
+      (prog, index) =>
+        new CoreSim(
+          prog.instructions,
+          prog.labels,
+          this.memory,
+          index,
+          this.secret
+        )
+    );
   }
 
   nextCycle() {
@@ -19,6 +28,10 @@ export default class CpuSim {
 
   getCacheRep() {
     return this.memory.getCacheRep();
+  }
+
+  getSecret() {
+    return this.secret;
   }
 
   execProgram(program) {}

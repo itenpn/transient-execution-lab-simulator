@@ -1,5 +1,3 @@
-import CpuSim from "./CpuSim";
-
 /* Handles opening up a file  */
 function handleFile(input) {
   const file = input.target.files[0];
@@ -7,9 +5,11 @@ function handleFile(input) {
 
   reader.onload = (e) => {
     const file = e.target.result;
-    const lines = file.split(/\r\n|\n/);
+    const Prog = new Program(file);
+    const cpu = new CpuSim([Prog]);
     //TODO: Do something with the file
-    console.log(tokenizeRriscFile(lines));
+    console.log(cpu);
+    document.getElementById("output-text").innerText = cpu.toString();
   };
 
   reader.onerror = (e) => {

@@ -1,6 +1,3 @@
-import { example1, example2 } from "./example_rrisc.js";
-import { INSTRUCTIONS, INSTRUCTION_INPUT } from "./Instructions.js";
-
 const MIN_REG_NUM = 0;
 const MAX_REG_NUM = 31;
 
@@ -134,9 +131,4 @@ class Program {
   }
 }
 
-const program1 = new Program(example1);
-const program2 = new Program(example2);
-
-const a = 1;
-
-export { Program };
+// export { Program };

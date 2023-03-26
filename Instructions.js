@@ -1,5 +1,3 @@
-import * as ops from "./Operations";
-
 const INSTRUCTION_CLASS = {
   MEMORY: "MEMORY",
   JUMP: "JUMP",
@@ -213,9 +211,9 @@ const INSTRUCTIONS = {
   },
 };
 
-export {
-  INSTRUCTION_CLASS,
-  INSTRUCTION_DEPENDENCY,
-  INSTRUCTION_INPUT,
-  INSTRUCTIONS,
-};
+// export {
+//   INSTRUCTION_CLASS,
+//   INSTRUCTION_DEPENDENCY,
+//   INSTRUCTION_INPUT,
+//   INSTRUCTIONS,
+// };
