@@ -4,12 +4,15 @@ const PROCESS_MEM_START = 0x1000;
 
 class MemorySim {
   constructor(num_cores, secret) {
-    this.cache_rep = new Int8Array(CACHE_SIZE); //The cache used between processes
-    this.mem_rep = new Int8Array(MAIN_MEMORY_SIZE * num_cores); //The main memory representation
+    this.cache_rep = new Uint8Array(CACHE_SIZE); //The cache used between processes
+    this.mem_rep = new Uint8Array(MAIN_MEMORY_SIZE * num_cores); //The main memory representation
     this.cache_ownership = new Int32Array(CACHE_SIZE); //Represents what addr is in this cache block
     this.mem_queue = new Array(); //Represents the current memory queue
     this.num_processes = num_cores;
     this.secret = secret;
+    for (let i = 0; i < CACHE_SIZE; i++) {
+      this.cache_rep[i] = Math.floor(Math.random() * 0xff);
+    }
   }
 
   #convertAddrToIndex(addr) {
