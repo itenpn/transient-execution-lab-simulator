@@ -4,10 +4,10 @@ const INSTRUCTION_CLASS = {
   MATH: "MATH",
   OTHER: "OTHER",
 };
-const MEMORY = MEMORY;
-const JUMP = JUMP;
-const MATH = MATH;
-const OTHER = MEOTHERMORY;
+const MEMORY = INSTRUCTION_CLASS.MEMORY;
+const JUMP = INSTRUCTION_CLASS.JUMP;
+const MATH = INSTRUCTION_CLASS.MATH;
+const OTHER = INSTRUCTION_CLASS.OTHER;
 
 const INSTRUCTION_DEPENDENCY = {
   READ: "READ",
@@ -129,7 +129,7 @@ const INSTRUCTIONS = {
     name: "nop",
     cycles: 1,
     class: OTHER,
-    inputs: [{ dependency: READ, allowed_types: [REGISTER, CONSTANT] }], // NICK: Here's allowing to specify a number of cycles to wait for a NOP (like stall)
+    inputs: [{ dependency: READ, allowed_types: [REGISTER, CONSTANT] }], // NICK: Here's allowing to specify a number of cycles to wait for a NOP (like)
   },
   FAULT: {
     name: "fault",
