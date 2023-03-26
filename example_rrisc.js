@@ -1,0 +1,114 @@
+const example1 = `
+;p1 
+exec victim 
+copy 0xff, R1 
+copy 0x1, R2 
+label start_loop: 
+label redundant_label: 
+flush R1 
+exec p0 
+cycletime R3 
+load R1, R5
+cycletime R4 
+sub R3, R4, R5
+copy 0x1, R3 
+sub R3, R4, R5
+jmpifzero R4, end_loop 
+sub R2, R1, R5 
+jmpifzero R1, start_loop 
+label end_loop: 
+checksecret R1 
+
+`;
+
+const example2 = `
+;SomeOfEveryInstruction
+
+label flushes:
+flush 0x100
+flush r2
+
+label cycletimes
+cycletime R1
+
+label loads:
+load 0x123, R0
+load R31, R0
+
+label stores:
+store R6, 0x80
+store R6, R7
+
+label nops:
+nop 7
+
+label jumps:
+jmpifzero R0, nops
+jmpifnotzero, R31, nops
+jmp nops
+
+label adds:
+add R1, R2, R3
+add 16, R9, R3
+add R9, 17, R3
+
+label subs:
+sub R1, R2, R3
+sub 16, R9, R3
+sub R9, 17, R3
+
+label muls:
+mul R1, R2, R3
+mul 16, R9, R3
+mul R9, 17, R3
+
+label divs:
+div R1, R2, R3
+div 16, R9, R3
+div R9, 17, R3
+
+label ands:
+and R1, R2, R3
+and 16, R9, R3
+and R9, 17, R3
+
+label ors:
+or R1, R2, R3
+or 16, R9, R3
+or R9, 17, R3
+
+label shiftls:
+shiftl R1, R3
+shiftl 16, R3
+
+label shiftrs:
+shiftr R1, R3
+shiftr 16, R3
+
+label loadsecrets:
+loadsecret 0x1234
+
+label copys:
+copy 0x1, R10
+copy R9, R10
+
+label faults:
+fault
+
+label checksecrets:
+checksecret R1
+
+label rets:
+ret
+
+label execs:
+exec asdf
+exec bsdf
+
+label labels:
+label bruh:
+label double_bruh:
+
+`;
+
+export { example1, example2 };
