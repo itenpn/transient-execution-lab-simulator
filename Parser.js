@@ -64,7 +64,9 @@ const instructionFromTokens = (tokens) => {
     }
     return { type, value };
   });
-  return { name, inputs };
+  const classDef = instructionDefinition.class;
+  const operation = instructionDefinition.operation;
+  return { name, inputs, classDef, operation };
 };
 
 const findNextNonlabelInstruction = (instructions, labelIndex) => {

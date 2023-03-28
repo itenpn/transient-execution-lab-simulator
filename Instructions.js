@@ -35,6 +35,7 @@ const INSTRUCTIONS = {
       { dependency: READ, allowed_types: [CONSTANT, REGISTER] },
       { dependency: WRITE, allowed_types: [REGISTER] },
     ],
+    operation: handleAdd,
   },
   SUB: {
     name: "sub",
@@ -45,6 +46,7 @@ const INSTRUCTIONS = {
       { dependency: READ, allowed_types: [CONSTANT, REGISTER] },
       { dependency: WRITE, allowed_types: [REGISTER] },
     ],
+    operation: handleSub,
   },
   MUL: {
     name: "mul",
@@ -55,6 +57,7 @@ const INSTRUCTIONS = {
       { dependency: READ, allowed_types: [CONSTANT, REGISTER] },
       { dependency: WRITE, allowed_types: [REGISTER] },
     ],
+    operation: handleMul,
   },
   DIV: {
     name: "div",
@@ -65,6 +68,7 @@ const INSTRUCTIONS = {
       { dependency: READ, allowed_types: [CONSTANT, REGISTER] },
       { dependency: WRITE, allowed_types: [REGISTER] },
     ],
+    operation: handleDiv,
   },
   SHIFTL: {
     name: "shiftl",
@@ -74,6 +78,7 @@ const INSTRUCTIONS = {
       { dependency: READ, allowed_types: [CONSTANT, REGISTER] },
       { dependency: WRITE, allowed_types: [REGISTER] },
     ],
+    operation: handleShiftL,
   },
   SHIFTR: {
     name: "shiftr",
@@ -83,6 +88,7 @@ const INSTRUCTIONS = {
       { dependency: READ, allowed_types: [CONSTANT, REGISTER] },
       { dependency: WRITE, allowed_types: [REGISTER] },
     ],
+    operation: handleShiftR,
   },
   AND: {
     name: "and",
@@ -93,6 +99,7 @@ const INSTRUCTIONS = {
       { dependency: READ, allowed_types: [CONSTANT, REGISTER] },
       { dependency: WRITE, allowed_types: [REGISTER] },
     ],
+    operation: handleAnd,
   },
   OR: {
     name: "or",
@@ -103,6 +110,7 @@ const INSTRUCTIONS = {
       { dependency: READ, allowed_types: [CONSTANT, REGISTER] },
       { dependency: WRITE, allowed_types: [REGISTER] },
     ],
+    operation: handleOr,
   },
   COPY: {
     name: "copy",
@@ -112,54 +120,63 @@ const INSTRUCTIONS = {
       { dependency: READ, allowed_types: [CONSTANT, REGISTER] },
       { dependency: WRITE, allowed_types: [REGISTER] },
     ],
+    operation: handleCopy,
   },
   FLUSH: {
     name: "flush",
     cycles: 1,
     class: OTHER,
     inputs: [{ dependency: READ, allowed_types: [CONSTANT, REGISTER] }],
+    operation: handleFlush,
   },
   CYCLETIME: {
     name: "cycletime",
     cycles: 1,
     class: OTHER,
     inputs: [{ dependency: WRITE, allowed_types: [REGISTER] }],
+    operation: handleCycleTime,
   },
   NOP: {
     name: "nop",
     cycles: 1,
     class: OTHER,
     inputs: [{ dependency: READ, allowed_types: [REGISTER, CONSTANT] }],
+    operation: handleNop,
   },
   FAULT: {
     name: "fault",
     cycles: 50,
     class: OTHER,
     inputs: [],
+    operation: handleFault,
   },
   CHECKSECRET: {
     name: "checksecret",
     cycles: 1,
     class: OTHER,
     inputs: [{ dependency: READ, allowed_types: [REGISTER] }],
+    operation: handleCheck,
   },
   RET: {
     name: "ret",
     cycles: 1,
     class: OTHER,
     inputs: [],
+    operation: handleRet,
   },
   EXEC: {
     name: "exec",
     cycles: 1,
     class: OTHER,
     inputs: [{ dependency: READ, allowed_types: [STRING] }],
+    operation: handleExec,
   },
   LABEL: {
     name: "label",
     cycles: 0,
     class: OTHER,
     inputs: [{ dependency: READ, allowed_types: [STRING] }],
+    operation: () => {},
   },
   LOAD: {
     name: "load",
@@ -169,6 +186,7 @@ const INSTRUCTIONS = {
       { dependency: READ, allowed_types: [CONSTANT, REGISTER] },
       { dependency: WRITE, allowed_types: [REGISTER] },
     ],
+    operation: handleLoad,
   },
   STORE: {
     name: "store",
@@ -178,12 +196,14 @@ const INSTRUCTIONS = {
       { dependency: READ, allowed_types: [CONSTANT, REGISTER] },
       { dependency: READ, allowed_types: [CONSTANT, REGISTER] },
     ],
+    operation: handleStore,
   },
   LOADSECRET: {
     name: "loadsecret",
     cycles: 1,
     class: MEMORY,
     inputs: [{ dependency: READ, allowed_types: [CONSTANT] }],
+    operation: handleLoadSecret,
   },
   JMPIFZERO: {
     name: "jmpifzero",
@@ -193,6 +213,7 @@ const INSTRUCTIONS = {
       { dependency: READ, allowed_types: [REGISTER] },
       { dependency: READ, allowed_types: [STRING] },
     ],
+    operation: handleJmpIfZero,
   },
   JMPIFNOTZERO: {
     name: "jmpifnotzero",
@@ -202,12 +223,14 @@ const INSTRUCTIONS = {
       { dependency: READ, allowed_types: [REGISTER] },
       { dependency: READ, allowed_types: [STRING] },
     ],
+    operation: handleJmpIfNotZero,
   },
   JMP: {
     name: "jmp",
     cycles: 1,
     class: JUMP,
     inputs: [{ dependency: READ, allowed_types: [STRING] }],
+    operation: handleJmp,
   },
 };
 

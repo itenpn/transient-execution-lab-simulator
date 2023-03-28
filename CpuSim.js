@@ -8,17 +8,12 @@ class CpuSim {
 
     this.cores = this.programList.map(
       (prog, index) =>
-        new CoreSim(
-          prog.instructions,
-          prog.labels,
-          this.memory,
-          index,
-          this.secret
-        )
+        new CoreSim(prog, this.memory, index, this.secret, this.getCycleNum)
     );
   }
 
   nextCycle() {
+    this.cores.forEach((core) => core.nextCycle());
     this.cycle++;
   }
 

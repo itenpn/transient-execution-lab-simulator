@@ -234,15 +234,32 @@ function handleCycleTime(
   writeReg,
   cycle,
   secret,
-  execProgram
+  execProgram,
+  terminate
 ) {
   const regNum = params[0].value;
   writeReg(regNum, cycle);
 }
 
-function handleNop(params, readReg, writeReg, cycle, secret, execProgram) {}
+function handleNop(
+  params,
+  readReg,
+  writeReg,
+  cycle,
+  secret,
+  execProgram,
+  terminate
+) {}
 
-function handleCopy(params, readReg, writeReg, cycle, secret, execProgram) {
+function handleCopy(
+  params,
+  readReg,
+  writeReg,
+  cycle,
+  secret,
+  execProgram,
+  terminate
+) {
   const valParam = params[0];
   const regNum = params[1].value;
   let val = 0;
@@ -254,21 +271,53 @@ function handleCopy(params, readReg, writeReg, cycle, secret, execProgram) {
   writeReg(regNum, val);
 }
 
-function handleFault(params, readReg, writeReg, cycle, secret, execProgram) {
+function handleFault(
+  params,
+  readReg,
+  writeReg,
+  cycle,
+  secret,
+  execProgram,
+  terminate
+) {
   //TODO: Figure out how to make fault work
 }
 
-function handleCheck(params, readReg, writeReg, cycle, secret, execProgram) {
+function handleCheck(
+  params,
+  readReg,
+  writeReg,
+  cycle,
+  secret,
+  execProgram,
+  terminate
+) {
   const regNum = params[0].value;
   const givenSecret = readReg(regNum);
   secret(givenSecret);
 }
 
-function handleRet(params, readReg, writeReg, cycle, secret, execProgram) {
+function handleRet(
+  params,
+  readReg,
+  writeReg,
+  cycle,
+  secret,
+  execProgram,
+  terminate
+) {
   //TODO: Figure out how to terminate early
 }
 
-function handleExec(params, readReg, writeReg, cycle, secret, execProgram) {
+function handleExec(
+  params,
+  readReg,
+  writeReg,
+  cycle,
+  secret,
+  execProgram,
+  terminate
+) {
   const prog = params[0].value;
   execProgram(prog);
 }
