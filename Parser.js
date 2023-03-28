@@ -106,9 +106,15 @@ const extractLabels = (instructions) => {
   return labels;
 };
 
+const stripComments = (text) => {
+  const cMultilineCommentRegex = /\/\*([^*]|\*+[^/])*\*+\//g;
+  return text.replaceAll(cMultilineCommentRegex, "");
+};
+
 class Program {
   constructor(file) {
-    const lines = file.split(/\r\n|\n/);
+    const noComments = stripComments(file);
+    const lines = noComments.split(/\r\n|\n/);
     const linesTokens = tokenizeLines(lines);
 
     const determineName = () => {
