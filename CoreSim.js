@@ -130,12 +130,12 @@ class CoreSim {
         return;
     }
 
-    instruction.cyclesLeft--;
     switch (instruction.classDef) {
       case INSTRUCTION_CLASS.JUMP:
         break;
       case INSTRUCTION_CLASS.MATH:
         if (instruction.cyclesLeft <= 0) {
+          console.log("FINISHED", instruction);
           instruction.operation(
             instruction.inputs,
             instruction.id,
@@ -178,6 +178,7 @@ class CoreSim {
         }
         break;
     }
+    instruction.cyclesLeft--;
   }
 
   writeReg(instId, regNum, data) {
