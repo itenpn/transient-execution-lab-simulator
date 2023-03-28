@@ -7,6 +7,7 @@
 //MEMORY INSTRUCTIONS
 function handleFlush(
   params,
+  instId,
   readReg,
   writeReg,
   queueRead,
@@ -17,7 +18,7 @@ function handleFlush(
   const cacheLineParam = params[0];
   let addr = 0;
   if (cacheLineParam.type === INSTRUCTION_INPUT.REGISTER) {
-    addr = readReg(cacheLineParam.value);
+    addr = readReg(instId, cacheLineParam.value);
   } else {
     addr = cacheLineParam.value;
   }
@@ -26,6 +27,7 @@ function handleFlush(
 
 function handleLoad(
   params,
+  instId,
   readReg,
   writeReg,
   queueRead,
@@ -36,16 +38,17 @@ function handleLoad(
   const addrParam = params[0];
   let addr = 0;
   if (addrParam.type === INSTRUCTION_INPUT.REGISTER) {
-    addr = readReg(addrParam.value);
+    addr = readReg(instId, addrParam.value);
   } else {
     addr = addrParam.value;
   }
   const regNum = params[1].value;
-  queueRead(addr, regNum);
+  queueRead(instId, addr, regNum);
 }
 
 function handleStore(
   params,
+  instId,
   readReg,
   writeReg,
   queueRead,
@@ -56,17 +59,18 @@ function handleStore(
   const addrParam = params[1];
   let addr = 0;
   if (addrParam.type === INSTRUCTION_INPUT.REGISTER) {
-    addr = readReg(addrParam.value);
+    addr = readReg(instId, addrParam.value);
   } else {
     addr = addrParam.value;
   }
   const regNum = params[0].value;
-  const data = readReg(regNum);
-  queueWrite(addr, data);
+  const data = readReg(instId, regNum);
+  queueWrite(instId, addr, data);
 }
 
 function handleLoadSecret(
   params,
+  instId,
   readReg,
   writeReg,
   queueRead,
@@ -79,157 +83,158 @@ function handleLoadSecret(
 }
 
 //BRANCH INSTRUCTIONS
-function handleJmp(params, readReg, performJump) {
+function handleJmp(params, instId, readReg, performJump) {
   const label = params[0].value;
   performJump(label);
 }
 
-function handleJmpIfZero(params, readReg, performJump) {
+function handleJmpIfZero(params, instId, readReg, performJump) {
   const regNum = params[0].value;
   const label = params[1].value;
-  const val = readReg(regNum);
+  const val = readReg(instId, regNum);
   if (val === 0) performJump(label);
 }
 
-function handleJmpIfNotZero(params, readReg, performJump) {
+function handleJmpIfNotZero(params, instId, readReg, performJump) {
   const regNum = params[0].value;
   const label = params[1].value;
-  const val = readReg(regNum);
+  const val = readReg(instId, regNum);
   if (val !== 0) performJump(label);
 }
 
 //MATH INSTRUCTIONS
-function handleAdd(params, readReg, writeReg) {
+function handleAdd(params, instId, readReg, writeReg) {
   const valParam1 = params[0];
   let val1 = 0;
   if (valParam1.type === INSTRUCTION_INPUT.REGISTER) {
-    val1 = readReg(valParam1.value);
+    val1 = readReg(instId, valParam1.value);
   } else {
     val1 = valParam1.value;
   }
   const valParam2 = params[1];
   let val2 = 0;
   if (valParam2.type === INSTRUCTION_INPUT.REGISTER) {
-    val2 = readReg(valParam2.value);
+    val2 = readReg(instId, valParam2.value);
   } else {
     val2 = valParam2.value;
   }
   const outParamReg = params[2].value;
-  writeReg(outParamReg, val1 + val2);
+  writeReg(instId, outParamReg, val1 + val2);
 }
 
-function handleSub(params, readReg, writeReg) {
+function handleSub(params, instId, readReg, writeReg) {
   const valParam1 = params[0];
   let val1 = 0;
   if (valParam1.type === INSTRUCTION_INPUT.REGISTER) {
-    val1 = readReg(valParam1.value);
+    val1 = readReg(instId, valParam1.value);
   } else {
     val1 = valParam1.value;
   }
   const valParam2 = params[1];
   let val2 = 0;
   if (valParam2.type === INSTRUCTION_INPUT.REGISTER) {
-    val2 = readReg(valParam2.value);
+    val2 = readReg(instId, valParam2.value);
   } else {
     val2 = valParam2.value;
   }
   const outParamReg = params[2].value;
-  writeReg(outParamReg, val1 - val2);
+  writeReg(instId, outParamReg, val1 - val2);
 }
 
-function handleMul(params, readReg, writeReg) {
+function handleMul(params, instId, readReg, writeReg) {
   const valParam1 = params[0];
   let val1 = 0;
   if (valParam1.type === INSTRUCTION_INPUT.REGISTER) {
-    val1 = readReg(valParam1.value);
+    val1 = readReg(instId, valParam1.value);
   } else {
     val1 = valParam1.value;
   }
   const valParam2 = params[1];
   let val2 = 0;
   if (valParam2.type === INSTRUCTION_INPUT.REGISTER) {
-    val2 = readReg(valParam2.value);
+    val2 = readReg(instId, valParam2.value);
   } else {
     val2 = valParam2.value;
   }
   const outParamReg = params[2].value;
-  writeReg(outParamReg, val1 * val2);
+  writeReg(instId, outParamReg, val1 * val2);
 }
 
-function handleDiv(params, readReg, writeReg) {
+function handleDiv(params, instId, readReg, writeReg) {
   const valParam1 = params[0];
   let val1 = 0;
   if (valParam1.type === INSTRUCTION_INPUT.REGISTER) {
-    val1 = readReg(valParam1.value);
+    val1 = readReg(instId, valParam1.value);
   } else {
     val1 = valParam1.value;
   }
   const valParam2 = params[1];
   let val2 = 0;
   if (valParam2.type === INSTRUCTION_INPUT.REGISTER) {
-    val2 = readReg(valParam2.value);
+    val2 = readReg(instId, valParam2.value);
   } else {
     val2 = valParam2.value;
   }
   const outParamReg = params[2].value;
-  writeReg(outParamReg, Math.floor(val1 / val2));
+  writeReg(instId, outParamReg, Math.floor(val1 / val2));
 }
 
-function handleAnd(params, readReg, writeReg) {
+function handleAnd(params, instId, readReg, writeReg) {
   const valParam1 = params[0];
   let val1 = 0;
   if (valParam1.type === INSTRUCTION_INPUT.REGISTER) {
-    val1 = readReg(valParam1.value);
+    val1 = readReg(instId, valParam1.value);
   } else {
     val1 = valParam1.value;
   }
   const valParam2 = params[1];
   let val2 = 0;
   if (valParam2.type === INSTRUCTION_INPUT.REGISTER) {
-    val2 = readReg(valParam2.value);
+    val2 = readReg(instId, valParam2.value);
   } else {
     val2 = valParam2.value;
   }
   const outParamReg = params[2].value;
-  writeReg(outParamReg, val1 & val2);
+  writeReg(instId, outParamReg, val1 & val2);
 }
 
-function handleOr(params, readReg, writeReg) {
+function handleOr(params, instId, readReg, writeReg) {
   const valParam1 = params[0];
   let val1 = 0;
   if (valParam1.type === INSTRUCTION_INPUT.REGISTER) {
-    val1 = readReg(valParam1.value);
+    val1 = readReg(instId, valParam1.value);
   } else {
     val1 = valParam1.value;
   }
   const valParam2 = params[1];
   let val2 = 0;
   if (valParam2.type === INSTRUCTION_INPUT.REGISTER) {
-    val2 = readReg(valParam2.value);
+    val2 = readReg(instId, valParam2.value);
   } else {
     val2 = valParam2.value;
   }
   const outParamReg = params[2].value;
-  writeReg(outParamReg, val1 | val2);
+  writeReg(instId, outParamReg, val1 | val2);
 }
 
-function handleShiftL(params, readReg, writeReg) {
+function handleShiftL(params, instId, readReg, writeReg) {
   const shiftCount = params[0].value;
   const regNum = params[1].value;
-  const val = readReg(regNum);
-  writeReg(regNum, val << shiftCount);
+  const val = readReg(instId, regNum);
+  writeReg(instId, regNum, val << shiftCount);
 }
 
-function handleShiftR(params, readReg, writeReg) {
+function handleShiftR(params, instId, readReg, writeReg) {
   const shiftCount = params[0].value;
   const regNum = params[1].value;
-  const val = readReg(regNum);
-  writeReg(regNum, val >> shiftCount);
+  const val = readReg(instId, regNum);
+  writeReg(instId, regNum, val >> shiftCount);
 }
 
 //OTHER INSTRUCTIONS
 function handleCycleTime(
   params,
+  instId,
   readReg,
   writeReg,
   cycle,
@@ -238,11 +243,12 @@ function handleCycleTime(
   terminate
 ) {
   const regNum = params[0].value;
-  writeReg(regNum, cycle);
+  writeReg(instId, regNum, cycle);
 }
 
 function handleNop(
   params,
+  instId,
   readReg,
   writeReg,
   cycle,
@@ -253,6 +259,7 @@ function handleNop(
 
 function handleCopy(
   params,
+  instId,
   readReg,
   writeReg,
   cycle,
@@ -264,15 +271,16 @@ function handleCopy(
   const regNum = params[1].value;
   let val = 0;
   if (valParam.type === INSTRUCTION_INPUT.REGISTER) {
-    val = readReg(valParam.value);
+    val = readReg(instId, valParam.value);
   } else {
     val = valParam.value;
   }
-  writeReg(regNum, val);
+  writeReg(instId, regNum, val);
 }
 
 function handleFault(
   params,
+  instId,
   readReg,
   writeReg,
   cycle,
@@ -285,6 +293,7 @@ function handleFault(
 
 function handleCheck(
   params,
+  instId,
   readReg,
   writeReg,
   cycle,
@@ -293,12 +302,13 @@ function handleCheck(
   terminate
 ) {
   const regNum = params[0].value;
-  const givenSecret = readReg(regNum);
+  const givenSecret = readReg(instId, regNum);
   secret(givenSecret);
 }
 
 function handleRet(
   params,
+  instId,
   readReg,
   writeReg,
   cycle,
@@ -311,6 +321,7 @@ function handleRet(
 
 function handleExec(
   params,
+  instId,
   readReg,
   writeReg,
   cycle,

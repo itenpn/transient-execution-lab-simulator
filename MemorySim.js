@@ -13,6 +13,7 @@ class MemorySim {
     for (let i = 0; i < CACHE_SIZE; i++) {
       this.cache_rep[i] = Math.floor(Math.random() * 0xff);
     }
+    this.currCycleActions = [];
   }
 
   #convertAddrToIndex(addr) {
@@ -82,7 +83,12 @@ class MemorySim {
       }
     });
     this.mem_queue = this.mem_queue.filter((a) => !a.completed);
+    this.currCycleActions = completedActions;
     return completedActions;
+  }
+
+  getCurrCycleActions(pid) {
+    return this.currCycleActions.filter((action) => action.pid === pid);
   }
 
   terminateProcess(pid) {
@@ -99,7 +105,7 @@ class MemorySim {
     return this.cache_rep;
   }
 
-  loadData(addr, pid, dest) {
+  loadData(instId, addr, pid, dest) {
     const convertedAddr = this.#convertAddrToIndex(addr);
     const permFailure =
       convertedAddr === -1 ||
@@ -122,11 +128,12 @@ class MemorySim {
       cycleWait: cycleWait,
       outsideBounds: convertedAddr === -1,
       completed: false,
+      instId: instId,
     });
     return permFailure;
   }
 
-  storeData(addr, pid, data) {
+  storeData(instId, addr, pid, data) {
     const convertedAddr = this.#convertAddrToIndex(addr);
     const permFailure =
       convertedAddr === -1 ||
@@ -148,6 +155,7 @@ class MemorySim {
       cycleWait: cycleWait,
       outsideBounds: convertedAddr === -1,
       completed: false,
+      instId: instId,
     });
     return permFailure;
   }

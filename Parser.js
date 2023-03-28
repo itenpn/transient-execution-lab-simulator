@@ -62,7 +62,8 @@ const instructionFromTokens = (tokens) => {
         `Instruction '${instructionDefinition.name}' parameter ${paramNum} allows types [${allowedTypesString}], found ${type}.`
       );
     }
-    return { type, value };
+    const dependency = inputDefinition.dependency;
+    return { type, value, dependency };
   });
   const classDef = instructionDefinition.class;
   const operation = instructionDefinition.operation;

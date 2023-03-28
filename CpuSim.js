@@ -13,6 +13,7 @@ class CpuSim {
   }
 
   nextCycle() {
+    this.memory.nextCycle();
     this.cores.forEach((core) => core.nextCycle());
     this.cycle++;
   }

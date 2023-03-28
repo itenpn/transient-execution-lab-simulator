@@ -8,7 +8,11 @@ function handleFile(input) {
     const Prog = new Program(file);
     const cpu = new CpuSim([Prog]);
     //TODO: Do something with the file
-    console.log(cpu);
+    console.log("cpu", cpu);
+    for (let i = 0; i < 20; i++) {
+      console.log("CYCLE", i);
+      cpu.nextCycle();
+    }
     document.getElementById("output-text").innerHTML = "";
     document.getElementById("output-text").appendChild(renderCache(cpu));
   };

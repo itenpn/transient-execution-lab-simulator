@@ -1,0 +1,15 @@
+;example
+
+copy 0x17, R1
+copy 0x28, R2
+store R1, 0x1000
+store R2, 0x1001
+load 0x1000, R2
+copy 0xff, R3
+add R1, R2, R3
+add R3, R2, R1
+sub R2, R3, R2
+add R1, R1, R1
+store R1, 0x1002
+load 0x1003, R1
+ret
