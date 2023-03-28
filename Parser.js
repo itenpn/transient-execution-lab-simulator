@@ -66,7 +66,8 @@ const instructionFromTokens = (tokens) => {
   });
   const classDef = instructionDefinition.class;
   const operation = instructionDefinition.operation;
-  return { name, inputs, classDef, operation };
+  const cycles = instructionDefinition.cycles;
+  return { name, inputs, cycles, classDef, operation };
 };
 
 const findNextNonlabelInstruction = (instructions, labelIndex) => {
