@@ -32,6 +32,7 @@ function convertInstructionToString(instruction) {
 
 function renderInstructionStream(instructionStream) {
   const baseTable = document.createElement("table");
+  baseTable.className = "tableSection";
   const header = document.createElement("thead");
   const headerRow = document.createElement("tr");
   const headerData = document.createElement("th");
@@ -39,6 +40,7 @@ function renderInstructionStream(instructionStream) {
   headerRow.appendChild(headerData);
   header.appendChild(headerRow);
   baseTable.appendChild(header);
+  const tableBody = document.createElement("tbody");
   let row = document.createElement("tr");
   for (let i = 0; i < instructionStream.length; i++) {
     let data = document.createElement("td");
@@ -47,10 +49,14 @@ function renderInstructionStream(instructionStream) {
     if (inst.committed) {
       data.style = "background-color: grey";
     }
+    if (inst.errorBranchPrediction) {
+      data.style = "background-color: red";
+    }
     row.appendChild(data);
-    baseTable.appendChild(row);
+    tableBody.appendChild(row);
     row = document.createElement("tr");
   }
+  baseTable.appendChild(tableBody);
   return baseTable;
 }
 

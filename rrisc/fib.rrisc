@@ -1,0 +1,20 @@
+;fib
+
+copy 0x1000, R0 /* Base Pointer */
+copy 2, R1 /* fib index counter */
+copy 1, R2 /* a = index 0 */
+copy 1, R3 /* b = index 1 */
+store R2, 0x1000
+store R3, 0x1001
+
+label start_loop
+add R2, R3, R4 /* c = a + b */
+copy R3, R2 /* b = a */
+copy R4, R3 /* b = c */
+add R1, R0, R5 /* get next mem index */
+store R4, R5 /* store result in mem */
+add 1, R1, R1 /* next index */
+sub 20, R1, R6 /* if index == 20, end loop */
+jmpifnotzero R6, start_loop
+
+ret

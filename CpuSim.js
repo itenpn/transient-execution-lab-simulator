@@ -36,14 +36,14 @@ class CpuSim {
 
   predictBranch(instId) {
     const history = this.branchPredictor[instId % 10];
-    return history === BRANCH_STRONG_TAKEN || history === BRANCH_WEAK_NOTTAKEN;
+    return history === BRANCH_STRONG_TAKEN || history === BRANCH_WEAK_TAKEN;
   }
 
   updateBranchPredictor(instId, truth) {
     const history = this.branchPredictor[instId % 10];
     const increment = truth ? 1 : -1;
     if (
-      history + increment >= BRANCH_STRONG_NOTTAKEN ||
+      history + increment >= BRANCH_STRONG_NOTTAKEN &&
       history + increment <= BRANCH_STRONG_TAKEN
     ) {
       this.branchPredictor[instId % 10] = history + increment;
@@ -52,8 +52,9 @@ class CpuSim {
 
   nextCycle() {
     this.memory.nextCycle();
-    this.cores.forEach((core) => core.nextCycle());
+    const commits = this.cores.map((core) => core.nextCycle());
     this.cycle++;
+    return commits;
   }
 
   getCycleNum() {

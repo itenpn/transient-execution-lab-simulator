@@ -31,18 +31,23 @@ class CoreSim {
     if (this.status) this.findAndAddInstruction();
     this.handleInstructions(memActions);
     this.instPointer++;
-    this.handleCommit();
+    return this.handleCommit();
   }
 
   handleCommit() {
-    if (this.commitPointer >= this.instructionStream.length) return;
+    if (this.commitPointer >= this.instructionStream.length) return false;
     const toBeCommitted = this.instructionStream[this.commitPointer];
     if (toBeCommitted.finished && !toBeCommitted.errorBranchPrediction) {
       const tempRegs = this.tempRegisters[this.commitPointer];
       toBeCommitted.committed = true;
       tempRegs.forEach((temp) => (this.registers[temp.value] = temp.output));
       this.commitPointer++;
+      return true;
     }
+    if (toBeCommitted.errorBranchPrediction) {
+      this.commitPointer++;
+    }
+    return false;
   }
 
   findAndAddInstruction() {
@@ -114,7 +119,6 @@ class CoreSim {
       });
 
     //Step 4: add instruction to queue
-    console.log("NEW INST OBJ", instObj);
     this.instructionStream.push(instObj);
     this.instIdCounter++;
   }
@@ -133,7 +137,6 @@ class CoreSim {
       );
       if (actionInst) {
         actionInst.finished = true;
-        console.log("FINISHED", actionInst);
         if (action.type === "load") {
           const data = action.returnData;
           const regNum = action.destReg;
@@ -154,12 +157,11 @@ class CoreSim {
       )
         return;
     }
-
     switch (instruction.classDef) {
       case INSTRUCTION_CLASS.JUMP:
         //If we haven't made a prediction yet for the branch, do so now
         if (instruction.prediction === null) {
-          const pred = this.predictBranch(instruction.id);
+          const pred = this.predictBranch(instruction.instPointerOriginal);
           instruction.prediction = pred;
           //If we predict taken, then perform the jump ahead of time
           if (pred) {
@@ -173,7 +175,6 @@ class CoreSim {
 
         //Once done with the cycles we can process the branch
         if (instruction.cyclesLeft <= 0 && !instruction.errorBranchPrediction) {
-          console.log("FINISHED", instruction);
           //first extract the ground truth of whether to jump or not
           const truth = instruction.operation(
             instruction.inputs,
@@ -207,13 +208,12 @@ class CoreSim {
           }
 
           //Update the predictor for later
-          this.updateBranchPredictor(instruction.id, truth);
+          this.updateBranchPredictor(instruction.instPointerOriginal, truth);
         }
         break;
       case INSTRUCTION_CLASS.MATH:
         //Math just requires a check to see when it should be done, then do the math
         if (instruction.cyclesLeft <= 0) {
-          console.log("FINISHED", instruction);
           instruction.operation(
             instruction.inputs,
             instruction.id,
@@ -226,7 +226,6 @@ class CoreSim {
       case INSTRUCTION_CLASS.MEMORY:
         //If we haven't started the request, we need to queue up the memory sim for it
         if (!instruction.memStarted) {
-          console.log("STARTED MEMORY", instruction);
           instruction.memStarted = true;
           instruction.operation(
             instruction.inputs,
@@ -243,7 +242,6 @@ class CoreSim {
       default:
         //handle the other instructions when they finish
         if (instruction.cyclesLeft <= 0) {
-          console.log("FINISHED", instruction);
           instruction.operation(
             instruction.inputs,
             instruction.id,
@@ -262,13 +260,11 @@ class CoreSim {
   }
 
   writeReg(instId, regNum, data) {
-    console.log(`inst ${instId} writes ${data} to R${regNum}`);
     this.tempRegisters[instId].find((temp) => temp.value === regNum).output =
       data;
   }
 
   readReg(instId, regNum) {
-    console.log(`inst ${instId} reads R${regNum}`);
     const instWork = this.instructionStream[instId];
     let depObj = instWork.dependencies.find((dep) => dep.register === regNum);
     if (depObj) {
@@ -286,14 +282,10 @@ class CoreSim {
   }
 
   queueRead(instId, addr, regNum) {
-    console.log(`inst ${instId} requests read to 0x${addr.toString(16)}`);
     this.memory.loadData(instId, addr, this.pid, regNum);
   }
 
   queueWrite(instId, addr, data) {
-    console.log(
-      `inst ${instId} requests write of ${data} to 0x${addr.toString(16)}`
-    );
     this.memory.storeData(instId, addr, this.pid, data);
   }
 

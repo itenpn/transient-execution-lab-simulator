@@ -7,7 +7,7 @@ function handleFile(input) {
 
   reader.onload = (e) => {
     const file = e.target.result;
-    const Prog = new Program(file);
+    const Prog = new Program(file, []);
     cpu = new CpuSim([Prog]);
   };
 
@@ -19,8 +19,7 @@ function handleFile(input) {
 }
 
 function handleNextCycle() {
-  console.log("cpu", cpu);
-  cpu.nextCycle();
+  const didCommit = cpu.nextCycle()[0];
   document.getElementById(
     "cycleView"
   ).innerText = `Cycle: ${cpu.getCycleNum()}`;
@@ -34,7 +33,13 @@ function handleNextCycle() {
   document
     .getElementById("regRep")
     .appendChild(renderRegisters(cpu.getRegisterReps()[0]));
+  return didCommit;
+}
+
+function handleGoToNextCommit() {
+  while (!handleNextCycle());
 }
 
 document.getElementById("file").onchange = handleFile;
 document.getElementById("next-button").onclick = handleNextCycle;
+document.getElementById("commit-button").onclick = handleGoToNextCommit;
