@@ -10,9 +10,9 @@ class MemorySim {
     this.mem_queue = new Array(); //Represents the current memory queue
     this.num_processes = num_cores;
     this.secret = secret;
-    for (let i = 0; i < CACHE_SIZE; i++) {
-      this.cache_rep[i] = Math.floor(Math.random() * 0xff);
-    }
+    // for (let i = 0; i < CACHE_SIZE; i++) {
+    //   this.cache_rep[i] = Math.floor(Math.random() * 0xff);
+    // }
     this.currCycleActions = [];
   }
 

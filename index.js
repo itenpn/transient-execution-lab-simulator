@@ -1,3 +1,5 @@
+let cpu = null;
+
 /* Handles opening up a file  */
 function handleFile(input) {
   const file = input.target.files[0];
@@ -6,15 +8,7 @@ function handleFile(input) {
   reader.onload = (e) => {
     const file = e.target.result;
     const Prog = new Program(file);
-    const cpu = new CpuSim([Prog]);
-    //TODO: Do something with the file
-    console.log("cpu", cpu);
-    for (let i = 0; i < 20; i++) {
-      console.log("CYCLE", i);
-      cpu.nextCycle();
-    }
-    document.getElementById("output-text").innerHTML = "";
-    document.getElementById("output-text").appendChild(renderCache(cpu));
+    cpu = new CpuSim([Prog]);
   };
 
   reader.onerror = (e) => {
@@ -24,19 +18,23 @@ function handleFile(input) {
   reader.readAsText(file);
 }
 
-/* Given an array of the lines of a RRISC file, generates an array where each entry
-	corresponds to each element of the command. */
-function tokenizeRriscFile(lines) {
-  let cmds = [];
-  lines.forEach((line) => {
-    cmds.push(
-      line
-        .trim()
-        .split(/[ ,]/)
-        .filter((a) => a.length > 0)
-    );
-  });
-  return cmds.filter((a) => a.length > 0).filter((a) => a[0][0] !== ";");
+function handleNextCycle() {
+  console.log("cpu", cpu);
+  cpu.nextCycle();
+  document.getElementById(
+    "cycleView"
+  ).innerText = `Cycle: ${cpu.getCycleNum()}`;
+  document.getElementById("cacheRep").innerHTML = "";
+  document.getElementById("cacheRep").appendChild(renderCache(cpu));
+  document.getElementById("instRep").innerHTML = "";
+  document
+    .getElementById("instRep")
+    .appendChild(renderInstructionStream(cpu.getInstructionStreamReps()[0]));
+  document.getElementById("regRep").innerHTML = "";
+  document
+    .getElementById("regRep")
+    .appendChild(renderRegisters(cpu.getRegisterReps()[0]));
 }
 
 document.getElementById("file").onchange = handleFile;
+document.getElementById("next-button").onclick = handleNextCycle;

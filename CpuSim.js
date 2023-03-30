@@ -26,6 +26,14 @@ class CpuSim {
     );
   }
 
+  getInstructionStreamReps() {
+    return this.cores.map((core) => core.getInstructionStreamRep());
+  }
+
+  getRegisterReps() {
+    return this.cores.map((core) => core.getRegisters());
+  }
+
   predictBranch(instId) {
     const history = this.branchPredictor[instId % 10];
     return history === BRANCH_STRONG_TAKEN || history === BRANCH_WEAK_NOTTAKEN;

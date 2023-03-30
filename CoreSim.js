@@ -31,6 +31,18 @@ class CoreSim {
     if (this.status) this.findAndAddInstruction();
     this.handleInstructions(memActions);
     this.instPointer++;
+    this.handleCommit();
+  }
+
+  handleCommit() {
+    if (this.commitPointer >= this.instructionStream.length) return;
+    const toBeCommitted = this.instructionStream[this.commitPointer];
+    if (toBeCommitted.finished && !toBeCommitted.errorBranchPrediction) {
+      const tempRegs = this.tempRegisters[this.commitPointer];
+      toBeCommitted.committed = true;
+      tempRegs.forEach((temp) => (this.registers[temp.value] = temp.output));
+      this.commitPointer++;
+    }
   }
 
   findAndAddInstruction() {
@@ -187,7 +199,7 @@ class CoreSim {
             //Mark all instructions after this one as incorrectly branched
             for (
               let i = instruction.id + 1;
-              i < this.instructionStream.length - 1;
+              i < this.instructionStream.length;
               i++
             ) {
               this.instructionStream[i].errorBranchPrediction = true;
@@ -307,4 +319,12 @@ class CoreSim {
   execProgram(prog) {}
 
   checkSecret(secret) {}
+
+  getInstructionStreamRep() {
+    return this.instructionStream;
+  }
+
+  getRegisters() {
+    return this.registers;
+  }
 }
