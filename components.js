@@ -8,7 +8,12 @@ function renderCache(cpu) {
       row = document.createElement("tr");
     }
     let data = document.createElement("td");
-    data.textContent = cache[i].toString(16);
+    let dataString = cache[i].toString(16);
+    if (dataString.length < 2) {
+      data.textContent = `0${dataString}`;
+    } else {
+      data.textContent = dataString;
+    }
     data.style = "border: 1px solid black;";
     row.appendChild(data);
   }
@@ -42,7 +47,7 @@ function renderInstructionStream(instructionStream) {
   baseTable.appendChild(header);
   const tableBody = document.createElement("tbody");
   let row = document.createElement("tr");
-  for (let i = 0; i < instructionStream.length; i++) {
+  for (let i = instructionStream.length - 1; i >= 0; i--) {
     let data = document.createElement("td");
     let inst = instructionStream[i];
     data.textContent = convertInstructionToString(inst);

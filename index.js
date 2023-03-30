@@ -23,6 +23,9 @@ function handleNextCycle() {
   document.getElementById(
     "cycleView"
   ).innerText = `Cycle: ${cpu.getCycleNum()}`;
+  document.getElementById(
+    "secretView"
+  ).innerText = `Secret: 0x${cpu.secret.toString(16)}`;
   document.getElementById("cacheRep").innerHTML = "";
   document.getElementById("cacheRep").appendChild(renderCache(cpu));
   document.getElementById("instRep").innerHTML = "";
