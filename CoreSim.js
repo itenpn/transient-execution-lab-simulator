@@ -1,5 +1,13 @@
 class CoreSim {
-  constructor(program, memorySim, pid, secret, getCycleNum) {
+  constructor(
+    program,
+    memorySim,
+    pid,
+    secret,
+    getCycleNum,
+    predictBranch,
+    updateBranchPredictor
+  ) {
     this.programStream = program.instructions;
     this.labels = program.labels;
     this.program = program;
@@ -14,6 +22,8 @@ class CoreSim {
     this.getCycleNum = getCycleNum;
     this.instIdCounter = 0;
     this.tempRegisters = {};
+    this.predictBranch = predictBranch;
+    this.updateBranchPredictor = updateBranchPredictor;
   }
 
   nextCycle() {
@@ -34,13 +44,16 @@ class CoreSim {
       committed: false,
       finished: false,
       memStarted: false,
+      prediction: null,
+      errorBranchPrediction: false,
+      instPointerOriginal: this.instPointer,
     };
 
     //Step 2: determine if the instruction has a dependency
     let dependentInsts = [];
     for (let i = this.instructionStream.length - 1; i >= 0; i--) {
       let instCheck = this.instructionStream[i];
-      if (!instCheck.committed) {
+      if (!instCheck.committed && !instCheck.errorBranchPrediction) {
         //The instruction may be doing something that affects us
         //Find the registers that the instruction we are evaluating is using
         let instCheckRegInputs = instCheck.inputs.filter(
@@ -132,8 +145,61 @@ class CoreSim {
 
     switch (instruction.classDef) {
       case INSTRUCTION_CLASS.JUMP:
+        //If we haven't made a prediction yet for the branch, do so now
+        if (instruction.prediction === null) {
+          const pred = this.predictBranch(instruction.id);
+          instruction.prediction = pred;
+          //If we predict taken, then perform the jump ahead of time
+          if (pred) {
+            if (instruction.name === INSTRUCTIONS.JMP.name) {
+              this.performJump(instruction.inputs[0].value);
+            } else {
+              this.performJump(instruction.inputs[1].value);
+            }
+          }
+        }
+
+        //Once done with the cycles we can process the branch
+        if (instruction.cyclesLeft <= 0 && !instruction.errorBranchPrediction) {
+          console.log("FINISHED", instruction);
+          //first extract the ground truth of whether to jump or not
+          const truth = instruction.operation(
+            instruction.inputs,
+            instruction.id,
+            this.readReg.bind(this),
+            this.performJump.bind(this)
+          );
+          instruction.finished = true;
+
+          //Check if there was a prediction error
+          if (instruction.prediction !== truth) {
+            //Correct the pointer to grab the correct instructions
+            if (truth) {
+              if (instruction.name === INSTRUCTIONS.JMP.name) {
+                this.performJump(instruction.inputs[0].value);
+              } else {
+                this.performJump(instruction.inputs[1].value);
+              }
+            } else {
+              this.instPointer = instruction.instPointerOriginal;
+            }
+
+            //Mark all instructions after this one as incorrectly branched
+            for (
+              let i = instruction.id + 1;
+              i < this.instructionStream.length - 1;
+              i++
+            ) {
+              this.instructionStream[i].errorBranchPrediction = true;
+            }
+          }
+
+          //Update the predictor for later
+          this.updateBranchPredictor(instruction.id, truth);
+        }
         break;
       case INSTRUCTION_CLASS.MATH:
+        //Math just requires a check to see when it should be done, then do the math
         if (instruction.cyclesLeft <= 0) {
           console.log("FINISHED", instruction);
           instruction.operation(
@@ -146,6 +212,7 @@ class CoreSim {
         }
         break;
       case INSTRUCTION_CLASS.MEMORY:
+        //If we haven't started the request, we need to queue up the memory sim for it
         if (!instruction.memStarted) {
           console.log("STARTED MEMORY", instruction);
           instruction.memStarted = true;
@@ -162,6 +229,7 @@ class CoreSim {
         }
         break;
       default:
+        //handle the other instructions when they finish
         if (instruction.cyclesLeft <= 0) {
           console.log("FINISHED", instruction);
           instruction.operation(
@@ -202,7 +270,7 @@ class CoreSim {
   performJump(jumpLabel) {
     const labelObj = this.labels.find((label) => label.name === jumpLabel);
     const labelIndex = labelObj.index;
-    this.instPointer = labelIndex;
+    this.instPointer = labelIndex - 1;
   }
 
   queueRead(instId, addr, regNum) {
@@ -229,7 +297,9 @@ class CoreSim {
     return this.getCycleNum();
   }
 
-  terminate() {
+  terminate(instId) {
+    const inst = this.instructionStream[instId];
+    if (inst.errorBranchPrediction) return;
     this.memory.terminateProcess(this.pid);
     this.status = false;
   }

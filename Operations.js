@@ -85,21 +85,27 @@ function handleLoadSecret(
 //BRANCH INSTRUCTIONS
 function handleJmp(params, instId, readReg, performJump) {
   const label = params[0].value;
-  performJump(label);
+  return true;
 }
 
 function handleJmpIfZero(params, instId, readReg, performJump) {
   const regNum = params[0].value;
   const label = params[1].value;
   const val = readReg(instId, regNum);
-  if (val === 0) performJump(label);
+  if (val === 0) {
+    return true;
+  }
+  return false;
 }
 
 function handleJmpIfNotZero(params, instId, readReg, performJump) {
   const regNum = params[0].value;
   const label = params[1].value;
   const val = readReg(instId, regNum);
-  if (val !== 0) performJump(label);
+  if (val !== 0) {
+    return true;
+  }
+  return false;
 }
 
 //MATH INSTRUCTIONS
