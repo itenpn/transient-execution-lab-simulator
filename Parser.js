@@ -113,22 +113,35 @@ const stripComments = (text) => {
   return text.replaceAll(cMultilineCommentRegex, "");
 };
 
+const prepFile = (file) => {
+  const noComments = stripComments(file);
+  const lines = noComments.split(/\r\n|\n/);
+  const linesTokens = tokenizeLines(lines);
+  return linesTokens;
+};
+
+const determineProgramName = (linesTokens) => {
+  const firstLineTokens = linesTokens[0];
+  if (firstLineTokens.length !== 1 || firstLineTokens[0][0] !== ";")
+    throw new Error("First line of program should be `;{program_name}`");
+  return firstLineTokens[0].slice(1);
+};
+
+const checkForDisallowedInstructions = (instructions, disallowed) => {
+  instructions.forEach((inst) => {
+    if (disallowed.includes(inst.name)) {
+      throw new Error(`Use of disallowed instruction '${inst.name}'`);
+    }
+  });
+};
+
 class Program {
-  constructor(file) {
-    const noComments = stripComments(file);
-    const lines = noComments.split(/\r\n|\n/);
-    const linesTokens = tokenizeLines(lines);
-
-    const determineName = () => {
-      const firstLineTokens = linesTokens[0];
-      if (firstLineTokens.length !== 1 || firstLineTokens[0][0] !== ";")
-        throw new Error("First line of program should be `;{program_name}`");
-      return firstLineTokens[0].slice(1);
-    };
-    const name = determineName();
-
-    const instructionsTokens = linesTokens.slice(1);
+  constructor(programFile, disallowedInstructions = ["add"]) {
+    const programLinesTokens = prepFile(programFile);
+    const name = determineProgramName(programLinesTokens);
+    const instructionsTokens = programLinesTokens.slice(1);
     const allInstructions = instructionsTokens.map(instructionFromTokens);
+    checkForDisallowedInstructions(allInstructions, disallowedInstructions);
 
     const labels = extractLabels(allInstructions);
     const nonLabelInstructions = allInstructions.filter(
