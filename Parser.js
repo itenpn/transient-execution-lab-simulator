@@ -136,7 +136,7 @@ const checkForDisallowedInstructions = (instructions, disallowed) => {
 };
 
 class Program {
-  constructor(programFile, disallowedInstructions = ["add"]) {
+  constructor(programFile, disallowedInstructions = []) {
     const programLinesTokens = prepFile(programFile);
     const name = determineProgramName(programLinesTokens);
     const instructionsTokens = programLinesTokens.slice(1);

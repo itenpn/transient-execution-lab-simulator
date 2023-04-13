@@ -340,7 +340,7 @@ function handleExec(
   terminate
 ) {
   const prog = params[0].value;
-  execProgram(prog);
+  execProgram(prog, instId);
   return { terminate: false, checkPass: false };
 }
 

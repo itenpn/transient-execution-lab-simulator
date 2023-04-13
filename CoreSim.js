@@ -6,7 +6,8 @@ class CoreSim {
     secret,
     getCycleNum,
     predictBranch,
-    updateBranchPredictor
+    updateBranchPredictor,
+    cpuExecProgram
   ) {
     this.programStream = program.instructions;
     this.labels = program.labels;
@@ -24,6 +25,18 @@ class CoreSim {
     this.tempRegisters = {};
     this.predictBranch = predictBranch;
     this.updateBranchPredictor = updateBranchPredictor;
+    this.cpuExecProgram = cpuExecProgram;
+  }
+
+  restartCore() {
+    this.memory.terminateProcess(this.pid);
+    this.status = true;
+    this.tempRegisters = {};
+    this.instructionStream = new Array();
+    this.registers = new Int32Array(32);
+    this.instIdCounter = 0;
+    this.instPointer = 0;
+    this.commitPointer = 0;
   }
 
   nextCycle() {
@@ -48,6 +61,9 @@ class CoreSim {
       this.commitPointer++;
       if (toBeCommitted.terminate) {
         this.status = false;
+      }
+      if (toBeCommitted.execProgram) {
+        this.cpuExecProgram(toBeCommitted.execProgram);
       }
       if (toBeCommitted.checkPass) {
         //TODO: Do something upon successful pass of the check
@@ -329,7 +345,10 @@ class CoreSim {
     this.status = false;
   }
 
-  execProgram(prog) {}
+  execProgram(prog, instId) {
+    const inst = this.instructionStream[instId];
+    inst.execProgram = prog;
+  }
 
   checkSecret(secret) {
     return secret === this.secret;

@@ -21,7 +21,8 @@ class CpuSim {
           this.secret,
           this.getCycleNum.bind(this),
           this.predictBranch.bind(this),
-          this.updateBranchPredictor.bind(this)
+          this.updateBranchPredictor.bind(this),
+          this.execProgram.bind(this)
         )
     );
   }
@@ -73,5 +74,8 @@ class CpuSim {
     return this.secret;
   }
 
-  execProgram(program) {}
+  execProgram(programName) {
+    const core = this.cores.find((core) => core.program.name === programName);
+    core.restartCore();
+  }
 }
