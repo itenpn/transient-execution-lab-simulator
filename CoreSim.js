@@ -37,7 +37,11 @@ class CoreSim {
   handleCommit() {
     if (this.commitPointer >= this.instructionStream.length) return false;
     const toBeCommitted = this.instructionStream[this.commitPointer];
-    if (toBeCommitted.finished && !toBeCommitted.errorBranchPrediction) {
+    if (
+      toBeCommitted.finished &&
+      !toBeCommitted.errorBranchPrediction &&
+      !toBeCommitted.errorMemoryAccess
+    ) {
       const tempRegs = this.tempRegisters[this.commitPointer];
       toBeCommitted.committed = true;
       tempRegs.forEach((temp) => (this.registers[temp.value] = temp.output));
@@ -46,6 +50,8 @@ class CoreSim {
     }
     if (toBeCommitted.errorBranchPrediction) {
       this.commitPointer++;
+    } else if (toBeCommitted.errorMemoryAccess) {
+      this.status = false;
     }
     return false;
   }
@@ -63,6 +69,7 @@ class CoreSim {
       memStarted: false,
       prediction: null,
       errorBranchPrediction: false,
+      errorMemoryAccess: false,
       instPointerOriginal: this.instPointer,
     };
 
@@ -137,6 +144,7 @@ class CoreSim {
       );
       if (actionInst) {
         actionInst.finished = true;
+        actionInst.errorMemoryAccess = action.permFailure;
         if (action.type === "load") {
           const data = action.returnData;
           const regNum = action.destReg;
