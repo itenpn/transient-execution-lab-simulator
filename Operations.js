@@ -250,6 +250,7 @@ function handleCycleTime(
 ) {
   const regNum = params[0].value;
   writeReg(instId, regNum, cycle);
+  return { terminate: false, checkPass: false };
 }
 
 function handleNop(
@@ -261,7 +262,9 @@ function handleNop(
   secret,
   execProgram,
   terminate
-) {}
+) {
+  return { terminate: false, checkPass: false };
+}
 
 function handleCopy(
   params,
@@ -294,7 +297,7 @@ function handleFault(
   execProgram,
   terminate
 ) {
-  //TODO: Figure out how to make fault work
+  return { terminate: true, checkPass: false };
 }
 
 function handleCheck(
@@ -309,7 +312,8 @@ function handleCheck(
 ) {
   const regNum = params[0].value;
   const givenSecret = readReg(instId, regNum);
-  secret(givenSecret);
+  const valid = secret(givenSecret);
+  return { terminate: true, checkPass: valid };
 }
 
 function handleRet(
@@ -322,7 +326,7 @@ function handleRet(
   execProgram,
   terminate
 ) {
-  //TODO: Figure out how to terminate early
+  return { terminate: true, checkPass: false };
 }
 
 function handleExec(
@@ -337,6 +341,7 @@ function handleExec(
 ) {
   const prog = params[0].value;
   execProgram(prog);
+  return { terminate: false, checkPass: false };
 }
 
 // export {

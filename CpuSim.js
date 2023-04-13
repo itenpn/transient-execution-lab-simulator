@@ -26,6 +26,10 @@ class CpuSim {
     );
   }
 
+  getRunningStatus() {
+    return this.cores.map((core) => core.status);
+  }
+
   getInstructionStreamReps() {
     return this.cores.map((core) => core.getInstructionStreamRep());
   }

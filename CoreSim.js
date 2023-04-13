@@ -46,6 +46,12 @@ class CoreSim {
       toBeCommitted.committed = true;
       tempRegs.forEach((temp) => (this.registers[temp.value] = temp.output));
       this.commitPointer++;
+      if (toBeCommitted.terminate) {
+        this.status = false;
+      }
+      if (toBeCommitted.checkPass) {
+        //TODO: Do something upon successful pass of the check
+      }
       return true;
     }
     if (toBeCommitted.errorBranchPrediction) {
@@ -71,7 +77,12 @@ class CoreSim {
       errorBranchPrediction: false,
       errorMemoryAccess: false,
       instPointerOriginal: this.instPointer,
+      terminate: false,
+      checkPass: false,
     };
+    if (instObj.name === "nop") {
+      instObj.cyclesLeft = nextInst.inputs[0].value;
+    }
 
     //Step 2: determine if the instruction has a dependency
     let dependentInsts = [];
@@ -250,7 +261,7 @@ class CoreSim {
       default:
         //handle the other instructions when they finish
         if (instruction.cyclesLeft <= 0) {
-          instruction.operation(
+          const retVal = instruction.operation(
             instruction.inputs,
             instruction.id,
             this.readReg.bind(this),
@@ -261,6 +272,8 @@ class CoreSim {
             this.terminate.bind(this)
           );
           instruction.finished = true;
+          instruction.terminate = retVal.terminate;
+          instruction.checkPass = retVal.checkPass;
         }
         break;
     }
@@ -318,7 +331,9 @@ class CoreSim {
 
   execProgram(prog) {}
 
-  checkSecret(secret) {}
+  checkSecret(secret) {
+    return secret === this.secret;
+  }
 
   getInstructionStreamRep() {
     return this.instructionStream;

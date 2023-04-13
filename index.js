@@ -40,7 +40,7 @@ function handleNextCycle() {
 }
 
 function handleGoToNextCommit() {
-  while (!handleNextCycle());
+  while (cpu.getRunningStatus()[0] && !handleNextCycle());
 }
 
 document.getElementById("file").onchange = handleFile;
