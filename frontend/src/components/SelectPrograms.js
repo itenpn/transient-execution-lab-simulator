@@ -33,9 +33,11 @@ function FileCard(props) {
       const text = e.target.result;
       setProgramText(text);
       try {
-        const program = new Program(text, []);
+        new Program(text, []);
+        setIsError(false);
       } catch (error) {
         setErrorText(error.message);
+        setIsError(true);
       }
     };
     reader.onerror = (e) => {
@@ -53,17 +55,17 @@ function FileCard(props) {
       <Paper elevation={15}>
         <Grid container direction="column">
           <Grid item container direction="row" alignItems="center">
-            <Grid item xs={10}>
+            <Grid item lg={10} xs={8}>
               <LabeledInline labelText="Name">{file.name}</LabeledInline>
             </Grid>
-            <Grid item xs={1}>
+            <Grid item lg={1} xs={2}>
               <Tooltip title={`${showProgramText ? "Hide" : "Show"} instructions`}>
                 <IconButton color="primary" onClick={() => setShowProgramText(!showProgramText)}>
                   {showProgramText ? <KeyboardArrowUpIcon /> : <KeyboardArrowDownIcon />}
                 </IconButton>
               </Tooltip>
             </Grid>
-            <Grid item xs={1}>
+            <Grid item lg={1} xs={2}>
               <Tooltip title="Remove Program">
                 <IconButton
                   color="primary"
@@ -83,9 +85,7 @@ function FileCard(props) {
           </Grid>
           {isError && (
             <Grid item>
-              <Box color="error.main">
-                <pre>{errorText}</pre>
-              </Box>
+              <Box color="error.main">{errorText}</Box>
             </Grid>
           )}
           <Collapse in={showProgramText}>
@@ -136,7 +136,7 @@ export default function SelectPrograms(props) {
 
           <Grid item container justifyContent="center" xs={4}>
             <Button variant="contained" component="label">
-              Select {files.length > 0 && "More"} Programs
+              Add Programs
               <input type="file" accept=".rrisc" multiple hidden onChange={onChange} />
             </Button>
           </Grid>
@@ -159,17 +159,3 @@ export default function SelectPrograms(props) {
     </>
   );
 }
-
-/**
- * 
-   files.forEach((file) => {
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        console.log(e.target.result);
-      };
-      reader.onerror = (e) => {
-        console.error(e.target.error.name);
-      };
-      reader.readAsText(file);
-    });
- */
