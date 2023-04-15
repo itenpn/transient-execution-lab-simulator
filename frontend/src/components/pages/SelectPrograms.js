@@ -14,6 +14,7 @@ import {
 import Delete from "@mui/icons-material/Delete";
 import KeyboardArrowUpIcon from "@mui/icons-material/KeyboardArrowUp";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
+import { useNavigate } from "react-router-dom";
 
 import { CpuSim } from "../../logic/CpuSim";
 import { Program } from "../../logic/Parser";
@@ -110,6 +111,8 @@ function FileCard(props) {
 export default function SelectPrograms(props) {
   const [files, setFiles] = useState([]);
 
+  const navigate = useNavigate();
+
   const onChange = (e) => {
     const newFiles = Array.from(e.target.files);
     // Assign a random key to each file for react key's sake
@@ -149,6 +152,7 @@ export default function SelectPrograms(props) {
     }
     if (programs.every((p) => p)) {
       const cpu = new CpuSim(programs);
+      navigate("/simulate");
     } else {
       /**
        * Ideally, this wouldn't be neccesary since the start button would just be unclickable unless every
