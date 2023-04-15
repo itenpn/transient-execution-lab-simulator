@@ -20,4 +20,9 @@ const inlineDelete = (array, toRemove, field = "id") => {
   return removed;
 };
 
-export { inlineReplace, inlineDelete };
+/**
+ * Sleeps for supplied milliseconds ms.
+ */
+const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
+
+export { inlineReplace, inlineDelete, sleep };

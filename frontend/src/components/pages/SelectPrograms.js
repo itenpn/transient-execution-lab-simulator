@@ -15,9 +15,10 @@ import Delete from "@mui/icons-material/Delete";
 import KeyboardArrowUpIcon from "@mui/icons-material/KeyboardArrowUp";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 
-import { Program } from "../logic/Parser";
-import LabeledInline from "./util/LabeledInline";
-import { inlineDelete } from "../logic/util";
+import { CpuSim } from "../../logic/CpuSim";
+import { Program } from "../../logic/Parser";
+import LabeledInline from "../util/LabeledInline";
+import { inlineDelete, sleep } from "../../logic/util";
 
 function FileCard(props) {
   const { file, removeFile } = props;
@@ -48,7 +49,7 @@ function FileCard(props) {
 
   useEffect(() => {
     doParse();
-  }, []);
+  }, [doParse]);
 
   return (
     <>
@@ -123,6 +124,41 @@ export default function SelectPrograms(props) {
     setFiles(inlineDelete(files, file, "name"));
   };
 
+  const startSimulation = async () => {
+    const done = files.map((_) => false);
+    const programs = files.map((_) => null);
+    const readers = files.map((_) => new FileReader());
+    readers.forEach((reader, index) => {
+      reader.onload = (e) => {
+        const text = e.target.result;
+        try {
+          const program = new Program(text, []);
+          programs[index] = program;
+        } catch (error) {
+          // Nothing, intentionally
+        }
+        done[index] = true;
+      };
+    });
+    for (let i = 0; i < readers.length; i++) {
+      readers[i].readAsText(files[i]);
+    }
+    while (!done.every((p) => p)) {
+      // Terrible handling of event-based code -- just sleep till every program is parsed
+      await sleep(1000);
+    }
+    if (programs.every((p) => p)) {
+      const cpu = new CpuSim(programs);
+    } else {
+      /**
+       * Ideally, this wouldn't be neccesary since the start button would just be unclickable unless every
+       * program was parseable. Unfortunately I don't know to to useRef or useImperativeHandle
+       * (or whatever lets this parent access the children programs), so this is the backup solution.
+       */
+      alert("Unparsable program, simulation cannot start.");
+    }
+  };
+
   return (
     <>
       <Paper elevation={10}>
@@ -141,7 +177,12 @@ export default function SelectPrograms(props) {
             </Button>
           </Grid>
           <Grid item container justifyContent="center" xs={4}>
-            <Button variant="contained" component="label">
+            <Button
+              variant="contained"
+              component="label"
+              disabled={files.length === 0}
+              onClick={startSimulation}
+            >
               Start Simulation
             </Button>
           </Grid>
@@ -150,8 +191,8 @@ export default function SelectPrograms(props) {
       <Paper elevation={10}>
         <Grid container direction="row" alignItems="center" justifyContent="center">
           {files.map((file) => (
-            <Grid item xs={6}>
-              <FileCard file={file} key={file.key} removeFile={removeFile}></FileCard>
+            <Grid item xs={6} key={file.key}>
+              <FileCard file={file} removeFile={removeFile}></FileCard>
             </Grid>
           ))}
         </Grid>

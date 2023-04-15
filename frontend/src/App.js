@@ -1,5 +1,5 @@
 import { Button, Grid, Paper } from "@mui/material";
-import SelectPrograms from "./components/SelectPrograms";
+import SelectPrograms from "./components/pages/SelectPrograms";
 
 function App() {
   return (
