@@ -25,4 +25,11 @@ const inlineDelete = (array, toRemove, field = "id") => {
  */
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 
-export { inlineReplace, inlineDelete, sleep };
+/**
+ * Returns an array of all numbers [start, end)
+ */
+const range = (start, end) => {
+  return [...Array(end - start).keys()].map((i) => i + start);
+};
+
+export { inlineReplace, inlineDelete, sleep, range };

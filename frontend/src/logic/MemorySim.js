@@ -180,4 +180,4 @@ class MemorySim {
   }
 }
 
-export { MemorySim };
+export { MemorySim, CACHE_SIZE };
