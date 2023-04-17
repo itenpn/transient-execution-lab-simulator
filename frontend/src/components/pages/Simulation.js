@@ -1,6 +1,7 @@
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
+import { Link, useLocation } from "react-router-dom";
 
-import { Button, Box, Tooltip, Paper, Grid } from "@mui/material";
+import { Button, Box, Tooltip, Paper, Grid, Typography } from "@mui/material";
 import Table from "@mui/material/Table";
 import TableBody from "@mui/material/TableBody";
 import TableCell from "@mui/material/TableCell";
@@ -9,12 +10,13 @@ import TableRow from "@mui/material/TableRow";
 
 import { CACHE_SIZE } from "../../logic/MemorySim";
 import { range } from "../../logic/util";
+import { global } from "../../logic/global";
 
 function Cache(props) {
   const { cache, height, width } = props;
   const BASE = 16;
 
-  const stringify = (data, base) => {
+  const stringifyData = (data, base) => {
     return data.toString(base).padStart(2, "0");
   };
 
@@ -31,10 +33,10 @@ function Cache(props) {
       <TableRow key={row}>
         {rowData.map((data, index) => {
           return (
-            <Tooltip title={`@0x${stringify(addresses[index], 16)}`} key={addresses[index]}>
+            <Tooltip title={`@0x${stringifyData(addresses[index], 16)}`} key={addresses[index]}>
               <TableCell>
                 <Box sx={{ fontFamily: "Monospace" }} component="span">
-                  {stringify(data, BASE)}
+                  {stringifyData(data, BASE)}
                 </Box>
               </TableCell>
             </Tooltip>
@@ -57,8 +59,18 @@ function Cache(props) {
 
 export default function Simulation() {
   const [cache, setCache] = useState(new Uint8Array(CACHE_SIZE));
+
+  const cpu = global?.cpu;
   const height = 16;
   const width = 16;
+
+  if (!cpu) {
+    return (
+      <Typography>
+        No programs selected, go to <Link to="/select">select</Link> to choose programs.
+      </Typography>
+    );
+  }
 
   const randomizeCache = () => {
     const newCache = new Uint8Array(CACHE_SIZE);

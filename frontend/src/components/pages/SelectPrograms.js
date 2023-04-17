@@ -20,6 +20,7 @@ import { CpuSim } from "../../logic/CpuSim";
 import { Program } from "../../logic/Parser";
 import LabeledInline from "../util/LabeledInline";
 import { inlineDelete, sleep } from "../../logic/util";
+import { global } from "../../logic/global";
 
 function FileCard(props) {
   const { file, removeFile } = props;
@@ -148,10 +149,11 @@ export default function SelectPrograms(props) {
     }
     while (!done.every((p) => p)) {
       // Terrible handling of event-based code -- just sleep till every program is parsed
-      await sleep(1000);
+      await sleep(100);
     }
     if (programs.every((p) => p)) {
       const cpu = new CpuSim(programs);
+      global.cpu = cpu;
       navigate("/simulate");
     } else {
       /**
