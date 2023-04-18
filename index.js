@@ -19,13 +19,10 @@ function handleFile(input) {
 }
 
 function handleNextCycle() {
+  console.log(cpu.getCycleNum());
   const didCommit = cpu.nextCycle()[0];
-  document.getElementById(
-    "cycleView"
-  ).innerText = `Cycle: ${cpu.getCycleNum()}`;
-  document.getElementById(
-    "secretView"
-  ).innerText = `Secret: 0x${cpu.secret.toString(16)}`;
+  document.getElementById("cycleView").innerText = `Cycle: ${cpu.getCycleNum()}`;
+  document.getElementById("secretView").innerText = `Secret: 0x${cpu.secret.toString(16)}`;
   document.getElementById("cacheRep").innerHTML = "";
   document.getElementById("cacheRep").appendChild(renderCache(cpu));
   document.getElementById("instRep").innerHTML = "";
@@ -33,9 +30,7 @@ function handleNextCycle() {
     .getElementById("instRep")
     .appendChild(renderInstructionStream(cpu.getInstructionStreamReps()[0]));
   document.getElementById("regRep").innerHTML = "";
-  document
-    .getElementById("regRep")
-    .appendChild(renderRegisters(cpu.getRegisterReps()[0]));
+  document.getElementById("regRep").appendChild(renderRegisters(cpu.getRegisterReps()[0]));
   return didCommit;
 }
 
