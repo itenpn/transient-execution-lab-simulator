@@ -1,6 +1,7 @@
 import { Grid, Typography } from "@mui/material";
 import Registers from "./registers";
 import Instructions from "./instructions";
+import InstructionStream from "./InstructionStream";
 
 export default function Core(props) {
   const { core, program, index } = props;
@@ -8,8 +9,8 @@ export default function Core(props) {
   return (
     <>
       <Grid container direction="row">
-        <Grid item xs={6} sx={{ height: "90vh" }}>
-          Instruction stream goes here
+        <Grid item xs={6} container justifyContent="center">
+          <InstructionStream stream={core.instructionStream} />
         </Grid>
         <Grid
           item

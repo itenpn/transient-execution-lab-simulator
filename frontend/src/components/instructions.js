@@ -22,9 +22,11 @@ export default function Instructions(props) {
 
     let styling = { fontFamily: "Monospace" };
     if (core.instPointer === index) {
-      styling.backgroundColor = "frick.main";
+      styling.backgroundColor = "instruction.dispatchPointer";
     }
-    console.log(core.instPointer);
+    if (core.instructionStream[core.commitPointer]?.instPointerOriginal === index) {
+      styling.backgroundColor = "instruction.commitPointer";
+    }
 
     return (
       <Box sx={styling} component="span">
@@ -39,14 +41,14 @@ export default function Instructions(props) {
         <Grid container direction="row">
           {instructions.map((instruction, index) => {
             return (
-              <>
-                <Grid item xs={6} container justifyContent="flex-end" key={"asdf" + index}>
+              <Grid item xs={12} container key={index}>
+                <Grid item xs={6} container justifyContent="flex-end">
                   <LabelCell index={index} />
                 </Grid>
                 <Grid item xs={6}>
-                  <InstructionCell instruction={instruction} index={index} key={"inst" + index} />
+                  <InstructionCell instruction={instruction} index={index} />
                 </Grid>
-              </>
+              </Grid>
             );
           })}
         </Grid>

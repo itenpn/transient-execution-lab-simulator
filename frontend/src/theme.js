@@ -18,8 +18,11 @@ const theme = createTheme({
     info: {
       main: "#c6e9f8",
     },
-    frick: {
-      main: "#00ff00",
+    instruction: {
+      commitPointer: "#00ff00",
+      dispatchPointer: "#ffff00",
+      committed: "#bebebe",
+      flushed: "#ff0000",
     },
     background: {
       default: "#ffffff",
