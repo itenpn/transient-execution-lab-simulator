@@ -1,0 +1,12 @@
+;write
+
+copy 0x1000, R0
+copy 0xff, R1
+
+label start
+add R0, R1, R2
+store 0xff, R2
+sub R1, 1, R1
+jmpifzero R1, start
+
+ret
