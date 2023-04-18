@@ -18,6 +18,9 @@ const theme = createTheme({
     info: {
       main: "#c6e9f8",
     },
+    frick: {
+      main: "#00ff00",
+    },
     background: {
       default: "#ffffff",
     },

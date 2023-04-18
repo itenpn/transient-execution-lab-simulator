@@ -1,0 +1,10 @@
+;RepeatedLabels
+
+label firstLabel:
+label secondLabel:
+label thirdLabel:
+label fourthLabel:
+sub R1, R2, R3
+sub 16, R9, R3
+sub R9, 17, R3
+

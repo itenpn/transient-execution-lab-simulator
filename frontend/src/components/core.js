@@ -1,6 +1,6 @@
 import { Grid, Typography } from "@mui/material";
 import Registers from "./registers";
-import { useState } from "react";
+import Instructions from "./instructions";
 
 export default function Core(props) {
   const { core, program, index } = props;
@@ -19,10 +19,17 @@ export default function Core(props) {
           alignItems="center"
           justifyContent="space-between"
         >
-          <Grid item sx={{ height: "45vh" }}>
+          <Grid item>
             <Typography variant="h4">{`Core ${index}: ${program.name}`}</Typography>
           </Grid>
-          <Grid item sx={{ height: "45vh" }} container justifyContent="center">
+          <Grid item>
+            <Instructions
+              core={core}
+              labels={core.labels}
+              instructions={core.program.instructions}
+            ></Instructions>
+          </Grid>
+          <Grid item container justifyContent="center">
             <Grid item xs={10}>
               <Registers registers={core.registers}></Registers>
             </Grid>

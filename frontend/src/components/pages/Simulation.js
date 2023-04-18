@@ -12,7 +12,6 @@ import NavigateNextIcon from "@mui/icons-material/NavigateNext";
 import MoveDownIcon from "@mui/icons-material/MoveDown";
 import AutorenewIcon from "@mui/icons-material/Autorenew";
 
-import { CACHE_SIZE } from "../../logic/MemorySim";
 import { range } from "../../logic/util";
 import { global } from "../../logic/global";
 import { stringifyData } from "../../logic/util";
@@ -85,8 +84,12 @@ export default function Simulation() {
     setFalseState(falseState + 1);
   };
 
-  const commitCpu = () => {
-    console.log("next commit");
+  const commitCpu = async () => {
+    try {
+      while (cpu.getRunningStatus()[coreIndex] && !cpu.nextCycle()[coreIndex]) {}
+    } catch (ex) {
+      console.error(ex);
+    }
     setFalseState(falseState + 1);
   };
 

@@ -259,4 +259,25 @@ const INSTRUCTIONS = {
   },
 };
 
-export { INSTRUCTION_CLASS, INSTRUCTION_DEPENDENCY, INSTRUCTION_INPUT, INSTRUCTIONS };
+function instructionToString(instruction) {
+  const name = instruction.name;
+  const inputs = instruction.inputs;
+  let stringInputs = inputs.map((input) => {
+    if (input.type === INSTRUCTION_INPUT.REGISTER) {
+      return `R${input.value}`;
+    }
+    if (input.type === INSTRUCTION_INPUT.CONSTANT) {
+      return `0x${input.value.toString(16)}`;
+    }
+    return input.value;
+  });
+  return `${name} ${stringInputs.join(", ")}`;
+}
+
+export {
+  INSTRUCTION_CLASS,
+  INSTRUCTION_DEPENDENCY,
+  INSTRUCTION_INPUT,
+  INSTRUCTIONS,
+  instructionToString,
+};
