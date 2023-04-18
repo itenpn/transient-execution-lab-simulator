@@ -231,6 +231,7 @@ function handleCopy(params, instId, readReg, writeReg, cycle, secret, execProgra
     val = valParam.value;
   }
   writeReg(instId, regNum, val);
+  return { terminate: false, checkPass: false };
 }
 
 function handleFault(params, instId, readReg, writeReg, cycle, secret, execProgram, terminate) {

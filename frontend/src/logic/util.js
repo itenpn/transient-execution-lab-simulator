@@ -32,4 +32,12 @@ const range = (start, end) => {
   return [...Array(end - start).keys()].map((i) => i + start);
 };
 
-export { inlineReplace, inlineDelete, sleep, range };
+/**
+ * Takes a number `data`, casts to base `base`, and prepends with "0" until
+ * total length is at least `length` characters
+ */
+const stringifyData = (data, base, length = 2) => {
+  return data.toString(base).padStart(length, "0");
+};
+
+export { inlineReplace, inlineDelete, sleep, range, stringifyData };

@@ -1,24 +1,26 @@
-import { useState, useRef, useEffect } from "react";
-import { Link, useLocation } from "react-router-dom";
+import { useState } from "react";
+import { Link } from "react-router-dom";
 
-import { Button, Box, Tooltip, Paper, Grid, Typography } from "@mui/material";
+import { Box, Tooltip, Paper, Grid, Typography, IconButton, Button } from "@mui/material";
 import Table from "@mui/material/Table";
 import TableBody from "@mui/material/TableBody";
 import TableCell from "@mui/material/TableCell";
 import TableContainer from "@mui/material/TableContainer";
 import TableRow from "@mui/material/TableRow";
+import NavigateBeforeIcon from "@mui/icons-material/NavigateBefore";
+import NavigateNextIcon from "@mui/icons-material/NavigateNext";
+import MoveDownIcon from "@mui/icons-material/MoveDown";
+import AutorenewIcon from "@mui/icons-material/Autorenew";
 
 import { CACHE_SIZE } from "../../logic/MemorySim";
 import { range } from "../../logic/util";
 import { global } from "../../logic/global";
+import { stringifyData } from "../../logic/util";
+import Core from "../core";
 
 function Cache(props) {
   const { cache, height, width } = props;
   const BASE = 16;
-
-  const stringifyData = (data, base) => {
-    return data.toString(base).padStart(2, "0");
-  };
 
   if (height * width !== cache.length)
     console.error(
@@ -34,7 +36,7 @@ function Cache(props) {
         {rowData.map((data, index) => {
           return (
             <Tooltip title={`@0x${stringifyData(addresses[index], 16)}`} key={addresses[index]}>
-              <TableCell>
+              <TableCell align="center">
                 <Box sx={{ fontFamily: "Monospace" }} component="span">
                   {stringifyData(data, BASE)}
                 </Box>
@@ -58,7 +60,8 @@ function Cache(props) {
 }
 
 export default function Simulation() {
-  const [cache, setCache] = useState(new Uint8Array(CACHE_SIZE));
+  const [coreIndex, setCoreIndex] = useState(0);
+  const [falseState, setFalseState] = useState(0);
 
   const cpu = global?.cpu;
   const height = 16;
@@ -72,22 +75,84 @@ export default function Simulation() {
     );
   }
 
-  const randomizeCache = () => {
-    const newCache = new Uint8Array(CACHE_SIZE);
-    for (let i = 0; i < CACHE_SIZE; i++) {
-      newCache[i] = 256 * Math.random();
+  const cycleCpu = () => {
+    console.log("next cycle");
+    try {
+      cpu.nextCycle();
+    } catch (ex) {
+      console.error(ex);
     }
-    setCache(newCache);
+    setFalseState(falseState + 1);
   };
+
+  const commitCpu = () => {
+    console.log("next commit");
+    setFalseState(falseState + 1);
+  };
+
+  console.log(cpu);
 
   return (
     <>
       <Grid container>
-        <Grid item xs={4}>
-          <Cache cache={cache} height={height} width={width}></Cache>
+        <Grid item xs={8}>
+          <Core
+            core={cpu.cores[coreIndex]}
+            program={cpu.programList[coreIndex]}
+            index={coreIndex}
+          />
+        </Grid>
+        <Grid item xs={3.6} container direction="column">
+          <Grid item container direction="row" alignItems="center" justifyContent="flex-end">
+            <Grid item xs={1}>
+              <Tooltip title="Previous Core">
+                <span>
+                  <IconButton
+                    color="primary"
+                    onClick={() => setCoreIndex(coreIndex - 1)}
+                    disabled={coreIndex === 0}
+                  >
+                    <NavigateBeforeIcon />
+                  </IconButton>
+                </span>
+              </Tooltip>
+            </Grid>
+            <Grid item xs={1}>
+              <Tooltip title="Next Core">
+                <span>
+                  <IconButton
+                    color="primary"
+                    onClick={() => setCoreIndex(coreIndex + 1)}
+                    disabled={coreIndex === cpu.num_cores - 1}
+                  >
+                    <NavigateNextIcon />
+                  </IconButton>
+                </span>
+              </Tooltip>
+            </Grid>
+            <Grid item xs={7} container justifyContent="center">
+              <Typography variant="h5">Cache Content</Typography>
+            </Grid>
+            <Grid item xs={1}>
+              <Tooltip title="Next Cycle">
+                <IconButton color="primary" onClick={cycleCpu}>
+                  <AutorenewIcon />
+                </IconButton>
+              </Tooltip>
+            </Grid>
+            <Grid item xs={1}>
+              <Tooltip title="Next Commit">
+                <IconButton color="primary" onClick={commitCpu}>
+                  <MoveDownIcon />
+                </IconButton>
+              </Tooltip>
+            </Grid>
+          </Grid>
+          <Grid item>
+            <Cache cache={cpu.getCacheRep()} height={height} width={width}></Cache>
+          </Grid>
         </Grid>
       </Grid>
-      <Button onClick={randomizeCache}>Randomize Cache</Button>
     </>
   );
 }
