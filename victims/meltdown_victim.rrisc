@@ -1,0 +1,4 @@
+;victim
+
+loadsecret 0x1000
+ret

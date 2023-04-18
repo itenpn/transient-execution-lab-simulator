@@ -1,0 +1,49 @@
+;victim
+
+loadsecret 0x1000
+load 0x1000, R0
+store 0, 0x1000
+copy 8, R1
+copy 0, R10
+copy 0, R11
+copy 1, R12
+
+label loop_start
+
+and R0, 0x1, R2
+jmpifzero R2, bit_zero
+jmp bit_one
+
+label bit_zero
+add 1, R10
+mul 2, R12, R12
+add R12, R11, R12
+cycletime R13
+add R12, R13, R13
+div R13, 4, R12
+nop 5
+store R10, 0x1005
+nop 1
+nop 1
+jmp end_bit
+
+label bit_one
+add 1, R11
+mul 3, R12, R12
+sub R12, R10, R12
+cycletime R13
+add R12, R13, R13
+div R13, 4, R12
+nop 5
+store R11, 0x100f
+
+label end_bit
+
+sub R1, 1, R1
+store R10, 0x10f0
+store R11, 0x10f5
+nop 1
+jmpifnotzero loop_start
+
+label loop_end
+ret
