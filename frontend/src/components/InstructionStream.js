@@ -5,8 +5,6 @@ import { instructionToString } from "../logic/Instructions";
 export default function InstructionStream(props) {
   const { stream } = props;
 
-  console.log("Stream", stream);
-
   function InstructionCell(props) {
     const { instruction } = props;
 

@@ -218,7 +218,7 @@ const INSTRUCTIONS = {
     cycles: 10,
     class: MEMORY,
     inputs: [
-      { dependency: READ, allowed_types: [CONSTANT, REGISTER] },
+      { dependency: READ, allowed_types: [REGISTER] },
       { dependency: READ, allowed_types: [CONSTANT, REGISTER] },
     ],
     operation: handleStore,
