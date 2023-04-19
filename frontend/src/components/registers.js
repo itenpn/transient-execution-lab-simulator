@@ -28,8 +28,9 @@ export default function Registers(props) {
 
   function RegisterRow(props) {
     const { row } = props;
-    const rowData = Array.from(registers.slice(row * 4, row * 4 + 4));
-    const indexes = range(row * 4, row * 4 + 4);
+
+    const rowData = Array.from(registers.filter((_, i) => i % 8 === row));
+    const indexes = range(0, 4).map((n) => 8 * n + row);
 
     return (
       <>
@@ -45,7 +46,7 @@ export default function Registers(props) {
 
   return (
     <>
-      <Box sx={{ width: 1 }}>
+      <Box>
         <Grid container>
           <TableContainer component={Paper}>
             <Table padding="checkbox">

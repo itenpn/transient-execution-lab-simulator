@@ -1,7 +1,7 @@
 import { useRef, useState } from "react";
 import { Link } from "react-router-dom";
 
-import { Box, Tooltip, Paper, Grid, Typography, IconButton, Button } from "@mui/material";
+import { Box, Tooltip, Paper, Grid, Typography, IconButton, TableHead } from "@mui/material";
 import Table from "@mui/material/Table";
 import TableBody from "@mui/material/TableBody";
 import TableCell from "@mui/material/TableCell";
@@ -18,6 +18,8 @@ import { global } from "../../logic/global";
 import { stringifyData } from "../../logic/util";
 import SimpleTextInput from "../util/SimpleTextInput";
 import Core from "../core";
+import LabeledInline from "../util/LabeledInline";
+import TallPaper from "../util/TallPaper";
 
 function Cache(props) {
   const { cache, height, width } = props;
@@ -51,8 +53,9 @@ function Cache(props) {
 
   return (
     <>
-      <Grid container>
-        <TableContainer component={Paper}>
+      <Grid container justifyContent="center">
+        <Typography variant="h5">Cache Content</Typography>
+        <TableContainer component={TallPaper}>
           <Table size="small" padding="none">
             <TableBody>{[...Array(height).keys()].map(CacheRow)}</TableBody>
           </Table>
@@ -62,14 +65,87 @@ function Cache(props) {
   );
 }
 
+const GlobalCpuState = (props) => {
+  const { cpu } = props;
+
+  const height = 16;
+  const width = 16;
+
+  const BP_STATES = {
+    0: "SNT",
+    1: "WNT",
+    2: "WT",
+    3: "ST",
+  };
+
+  return (
+    <Paper elevation={10}>
+      <Grid
+        container
+        direction="row"
+        alignItems="center"
+        justifyContent="center"
+        spacing={0}
+      ></Grid>
+      <Grid item container justifyContent="center">
+        <Typography variant="h4">Global CPU State</Typography>
+      </Grid>
+      <Grid item container py={1} justifyContent="space-around">
+        <Grid item xs={2}>
+          <LabeledInline labelText="Cycle">{cpu.getCycleNum()}</LabeledInline>
+        </Grid>
+        <Grid item xs={2}>
+          <LabeledInline labelText="Secret">{`0x${stringifyData(cpu.secret, 16)}`}</LabeledInline>
+        </Grid>
+      </Grid>
+      <Grid item container py={1} justifyContent="space-around">
+        <Typography variant="h5">Branch Predictor States</Typography>
+        <TableContainer component={TallPaper}>
+          <Table size="small" padding="none">
+            <TableHead>
+              <TableRow>
+                <TableCell>
+                  <Typography sx={{ fontWeight: "bold" }}>Index % 10</Typography>
+                </TableCell>
+                {Array.from(cpu.branchPredictor).map((_, index) => {
+                  return (
+                    <TableCell key={index} sx={{ minWidth: 25 }} align="center">
+                      {index}
+                    </TableCell>
+                  );
+                })}
+              </TableRow>
+            </TableHead>
+            <TableHead>
+              <TableRow>
+                <TableCell>
+                  <Typography sx={{ fontWeight: "bold" }}>State</Typography>
+                </TableCell>
+                {Array.from(cpu.branchPredictor).map((value, index) => {
+                  return (
+                    <TableCell key={index} align="center">
+                      {BP_STATES[value]}
+                    </TableCell>
+                  );
+                })}
+              </TableRow>
+            </TableHead>
+          </Table>
+        </TableContainer>
+      </Grid>
+      <Grid item>
+        <Cache cache={cpu.getCacheRep()} height={height} width={width}></Cache>
+      </Grid>
+    </Paper>
+  );
+};
+
 export default function Simulation() {
   const [coreIndex, setCoreIndex] = useState(0);
   const [falseState, setFalseState] = useState(0);
   const cpuRepeatCountRef = useRef();
 
   const cpu = global?.cpu;
-  const height = 16;
-  const width = 16;
 
   if (!cpu) {
     return (
@@ -119,67 +195,80 @@ export default function Simulation() {
 
   function Controls() {
     return (
-      <Grid item container direction="row" alignItems="center" justifyContent="flex-end">
-        <Grid item xs={1}>
-          <Tooltip title="Previous Core">
-            <span>
-              <IconButton
-                color="primary"
-                onClick={() => setCoreIndex(coreIndex - 1)}
-                disabled={coreIndex === 0}
-              >
-                <NavigateBeforeIcon />
+      <Paper elevation={10}>
+        <Grid
+          item
+          container
+          direction="row"
+          alignItems="center"
+          justifyContent="center"
+          spacing={2}
+        >
+          <Grid item xs={12} container justifyContent="center">
+            <Typography variant="h4">Controls</Typography>
+          </Grid>
+          <Grid item xs={1}>
+            <Tooltip title="Previous Core">
+              <span>
+                <IconButton
+                  color="primary"
+                  onClick={() => setCoreIndex(coreIndex - 1)}
+                  disabled={coreIndex === 0}
+                >
+                  <NavigateBeforeIcon />
+                </IconButton>
+              </span>
+            </Tooltip>
+          </Grid>
+          <Grid item xs={1}>
+            <Tooltip title="Next Core">
+              <span>
+                <IconButton
+                  color="primary"
+                  onClick={() => setCoreIndex(coreIndex + 1)}
+                  disabled={coreIndex === cpu.num_cores - 1}
+                >
+                  <NavigateNextIcon />
+                </IconButton>
+              </span>
+            </Tooltip>
+          </Grid>
+          <Grid item xs={1}>
+            <Tooltip title="Reset Core">
+              <span>
+                <IconButton color="primary" onClick={resetCore}>
+                  <PowerSettingsNewIcon />
+                </IconButton>
+              </span>
+            </Tooltip>
+          </Grid>
+          <Grid item xs={3}>
+            <SimpleTextInput
+              field="cpu-repeat-count"
+              label="CPU Action Count"
+              type="number"
+              defaultValue={determineRepeatCountValue()}
+              inputProps={{ min: 1 }}
+              ref={cpuRepeatCountRef}
+            ></SimpleTextInput>
+          </Grid>
+          <Grid item xs={1}>
+            <Tooltip title="Next Cycle">
+              <IconButton color="primary" onClick={cycleCpu}>
+                <AutorenewIcon />
               </IconButton>
-            </span>
-          </Tooltip>
-        </Grid>
-        <Grid item xs={1}>
-          <Tooltip title="Next Core">
-            <span>
-              <IconButton
-                color="primary"
-                onClick={() => setCoreIndex(coreIndex + 1)}
-                disabled={coreIndex === cpu.num_cores - 1}
-              >
-                <NavigateNextIcon />
+            </Tooltip>
+          </Grid>
+          <Grid item xs={1}>
+            <Tooltip title="Next Commit">
+              <IconButton color="primary" onClick={commitCpu}>
+                <MoveDownIcon />
               </IconButton>
-            </span>
-          </Tooltip>
+            </Tooltip>
+          </Grid>
+          <Grid item xs={1}></Grid>
         </Grid>
-        <Grid item xs={1}>
-          <Tooltip title="Reset Core">
-            <span>
-              <IconButton color="primary" onClick={resetCore}>
-                <PowerSettingsNewIcon />
-              </IconButton>
-            </span>
-          </Tooltip>
-        </Grid>
-        <Grid item xs={3}>
-          <SimpleTextInput
-            field="cpu-repeat-count"
-            label="CPU Repeat Count"
-            type="number"
-            defaultValue={determineRepeatCountValue()}
-            inputProps={{ min: 1 }}
-            ref={cpuRepeatCountRef}
-          ></SimpleTextInput>
-        </Grid>
-        <Grid item xs={1}>
-          <Tooltip title="Next Cycle">
-            <IconButton color="primary" onClick={cycleCpu}>
-              <AutorenewIcon />
-            </IconButton>
-          </Tooltip>
-        </Grid>
-        <Grid item xs={1}>
-          <Tooltip title="Next Commit">
-            <IconButton color="primary" onClick={commitCpu}>
-              <MoveDownIcon />
-            </IconButton>
-          </Tooltip>
-        </Grid>
-      </Grid>
+      </Paper>
     );
   }
 
@@ -196,10 +285,9 @@ export default function Simulation() {
         <Grid item xs={4} container direction="column">
           <Grid item>
             <Controls />
-            <Grid item container justifyContent="center">
-              <Typography variant="h5">Cache Content</Typography>
-            </Grid>
-            <Cache cache={cpu.getCacheRep()} height={height} width={width}></Cache>
+          </Grid>
+          <Grid item>
+            <GlobalCpuState cpu={cpu} />
           </Grid>
         </Grid>
       </Grid>
