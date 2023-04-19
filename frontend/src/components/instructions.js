@@ -42,26 +42,30 @@ export default function Instructions(props) {
   return (
     <>
       <Grid container justifyContent="center">
-        <Typography variant="h5">Program Instructions</Typography>
-        <Box sx={{ border: 2 }}>
-          <Grid container direction="row">
-            {instructions.map((instruction, index) => {
-              return (
-                <Grid item xs={12} container alignItems="center" key={index}>
-                  <Grid item xs={6} container justifyContent="flex-end" alignItems="center">
-                    <LabelCell index={index} />
+        <Grid item xs={12} container justifyContent="center">
+          <Typography variant="h5">Program Instructions</Typography>
+        </Grid>
+        <Grid item xs={12}>
+          <Box sx={{ border: 2 }}>
+            <Grid container direction="row">
+              {instructions.map((instruction, index) => {
+                return (
+                  <Grid item xs={12} container alignItems="center" key={index}>
+                    <Grid item xs={6} container justifyContent="flex-end" alignItems="center">
+                      <LabelCell index={index} />
+                    </Grid>
+                    <Grid item xs={6} container alignItems="center">
+                      <InstructionCell instruction={instruction} index={index} />
+                    </Grid>
+                    <Grid item xs={12}>
+                      <Divider />
+                    </Grid>
                   </Grid>
-                  <Grid item xs={6} container alignItems="center">
-                    <InstructionCell instruction={instruction} index={index} />
-                  </Grid>
-                  <Grid item xs={12}>
-                    <Divider />
-                  </Grid>
-                </Grid>
-              );
-            })}
-          </Grid>
-        </Box>
+                );
+              })}
+            </Grid>
+          </Box>
+        </Grid>
       </Grid>
     </>
   );
