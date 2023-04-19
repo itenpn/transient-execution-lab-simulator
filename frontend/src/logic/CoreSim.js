@@ -14,7 +14,8 @@ class CoreSim {
     getCycleNum,
     predictBranch,
     updateBranchPredictor,
-    cpuExecProgram
+    cpuExecProgram,
+    handleSecretCheck
   ) {
     this.programStream = program.instructions;
     this.labels = program.labels;
@@ -33,6 +34,7 @@ class CoreSim {
     this.predictBranch = predictBranch;
     this.updateBranchPredictor = updateBranchPredictor;
     this.cpuExecProgram = cpuExecProgram;
+    this.handleSecretCheck = handleSecretCheck;
   }
 
   restartCore() {
@@ -72,9 +74,10 @@ class CoreSim {
       if (toBeCommitted.execProgram) {
         this.cpuExecProgram(toBeCommitted.execProgram);
       }
-      if (toBeCommitted.checkPass) {
-        //TODO: Do something upon successful pass of the check
+      if (toBeCommitted.name === "checksecret") {
+        this.handleSecretCheck(toBeCommitted.checkPass);
       }
+
       return true;
     }
     if (toBeCommitted.errorBranchPrediction) {
@@ -131,8 +134,13 @@ class CoreSim {
 
         //See if there is any overlap
         nextInstRegInputs.forEach((regInput) => {
-          let found = instCheckRegInputs.find((input) => input.value === regInput.value);
-          if (found && !dependentInsts.find((dep) => dep.register === regInput.value)) {
+          let found = instCheckRegInputs.find(
+            (input) => input.value === regInput.value
+          );
+          if (
+            found &&
+            !dependentInsts.find((dep) => dep.register === regInput.value)
+          ) {
             dependentInsts.push({
               dependentId: instCheck.id,
               register: regInput.value,
@@ -162,10 +170,15 @@ class CoreSim {
   handleInstructions(memActions) {
     this.instructionStream.forEach(this.handleSingleInstruction, this);
     const inProgressMemInsts = this.instructionStream.filter(
-      (inst) => inst.classDef === INSTRUCTION_CLASS.MEMORY && !inst.finished && inst.memStarted
+      (inst) =>
+        inst.classDef === INSTRUCTION_CLASS.MEMORY &&
+        !inst.finished &&
+        inst.memStarted
     );
     memActions.forEach((action) => {
-      const actionInst = inProgressMemInsts.find((inst) => action.instId === inst.id);
+      const actionInst = inProgressMemInsts.find(
+        (inst) => action.instId === inst.id
+      );
       if (actionInst) {
         actionInst.finished = true;
         actionInst.errorMemoryAccess = action.permFailure;
@@ -230,7 +243,11 @@ class CoreSim {
             }
 
             //Mark all instructions after this one as incorrectly branched
-            for (let i = instruction.id + 1; i < this.instructionStream.length; i++) {
+            for (
+              let i = instruction.id + 1;
+              i < this.instructionStream.length;
+              i++
+            ) {
               this.instructionStream[i].errorBranchPrediction = true;
             }
           }
@@ -290,14 +307,17 @@ class CoreSim {
   }
 
   writeReg(instId, regNum, data) {
-    this.tempRegisters[instId].find((temp) => temp.value === regNum).output = data;
+    this.tempRegisters[instId].find((temp) => temp.value === regNum).output =
+      data;
   }
 
   readReg(instId, regNum) {
     const instWork = this.instructionStream[instId];
     let depObj = instWork.dependencies.find((dep) => dep.register === regNum);
     if (depObj) {
-      return this.tempRegisters[depObj.dependentId].find((temp) => temp.value === regNum).output;
+      return this.tempRegisters[depObj.dependentId].find(
+        (temp) => temp.value === regNum
+      ).output;
     }
     return this.registers[regNum];
   }
