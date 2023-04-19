@@ -20,6 +20,7 @@ import SimpleTextInput from "../util/SimpleTextInput";
 import Core from "../core";
 import LabeledInline from "../util/LabeledInline";
 import TallPaper from "../util/TallPaper";
+import WinDialog from "../WinDialog";
 
 function Cache(props) {
   const { cache, height, width } = props;
@@ -146,6 +147,8 @@ export default function Simulation() {
   const [coreIndex, setCoreIndex] = useState(0);
   const [falseState, setFalseState] = useState(0);
   const [errorText, setErrorText] = useState("");
+  const [winDialogOpen, setWinDialogOpen] = useState(false);
+  const [loseDialogOpen, setLoseDialogOpen] = useState(false);
   const cpuRepeatCountRef = useRef();
 
   const cpu = global?.cpu;
@@ -158,11 +161,26 @@ export default function Simulation() {
     );
   }
 
+  const closeBoth = () => {
+    setWinDialogOpen(false);
+  };
+
+  const checkAndHandleEnd = () => {
+    if (cpu.lockCheckSecret) {
+      if (cpu.guessSecretCorrect) {
+        setWinDialogOpen(true);
+      } else {
+        setLoseDialogOpen(true);
+      }
+    }
+  };
+
   const cycleCpu = () => {
     const count = Number(cpuRepeatCountRef.current.value);
     for (let i = 0; i < count; i++) {
       try {
         cpu.nextCycle();
+        checkAndHandleEnd();
       } catch (ex) {
         console.error(ex);
         setErrorText(ex.message);
@@ -175,7 +193,9 @@ export default function Simulation() {
     const count = Number(cpuRepeatCountRef.current.value);
     for (let i = 0; i < count; i++) {
       try {
-        while (cpu.getRunningStatus()[coreIndex] && !cpu.nextCycle()[coreIndex]) {}
+        while (cpu.getRunningStatus()[coreIndex] && !cpu.nextCycle()[coreIndex]) {
+          checkAndHandleEnd();
+        }
       } catch (ex) {
         console.error(ex);
         setErrorText(ex.message);
@@ -300,6 +320,8 @@ export default function Simulation() {
           </Grid>
         </Grid>
       </Grid>
+      <WinDialog open={winDialogOpen} onClose={closeBoth} />
+      <WinDialog open={loseDialogOpen} onClose={closeBoth} />
     </>
   );
 }
