@@ -20,7 +20,7 @@ export default function Registers(props) {
           <Box fontWeight="bold" component="span">
             R{(index + "").padEnd(3, " ")}
           </Box>
-          {stringifyData(value, BASE, 8)}
+          {stringifyData(value, BASE, 8, "\xa0")}
         </Box>
       </TableCell>
     );

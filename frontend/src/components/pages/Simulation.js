@@ -109,8 +109,8 @@ const GlobalCpuState = (props) => {
                 </TableCell>
                 {Array.from(cpu.branchPredictor).map((_, index) => {
                   return (
-                    <TableCell key={index} sx={{ minWidth: 25 }} align="center">
-                      {index}
+                    <TableCell key={index} align="center">
+                      {"\xa0".repeat(2) + index + "\xa0".repeat(2)}
                     </TableCell>
                   );
                 })}
