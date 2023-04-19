@@ -1,4 +1,4 @@
-import { Grid, Box, Paper } from "@mui/material";
+import { Grid, Box, Paper, Typography } from "@mui/material";
 import Table from "@mui/material/Table";
 import TableBody from "@mui/material/TableBody";
 import TableCell from "@mui/material/TableCell";
@@ -47,7 +47,10 @@ export default function Registers(props) {
   return (
     <>
       <Box>
-        <Grid container>
+        <Grid container justifyContent="center">
+          <Typography variant="h5" pt={2}>
+            Register Content
+          </Typography>
           <TableContainer component={Paper}>
             <Table padding="checkbox">
               <TableBody>

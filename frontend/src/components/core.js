@@ -1,4 +1,4 @@
-import { Grid, Typography } from "@mui/material";
+import { Grid, Typography, Paper } from "@mui/material";
 
 import Registers from "./registers";
 import Instructions from "./instructions";
@@ -13,29 +13,33 @@ export default function Core(props) {
         <Grid item xs={6} container justifyContent="center">
           <InstructionStream stream={core.instructionStream} />
         </Grid>
-        <Grid
-          item
-          xs={6}
-          container
-          direction="column"
-          alignItems="center"
-          justifyContent="space-around"
-        >
-          <Grid item>
-            <Typography variant="h4">{`Core ${index}: ${program.name}`}</Typography>
-          </Grid>
-          <Grid item>
-            <Instructions
-              core={core}
-              labels={core.labels}
-              instructions={core.program.instructions}
-            ></Instructions>
-          </Grid>
-          <Grid item container>
-            <Grid item xs={12}>
-              <Registers registers={core.registers}></Registers>
+        <Grid item xs={6}>
+          <Paper elevation={10}>
+            <Grid
+              item
+              xs={12}
+              container
+              direction="column"
+              alignItems="center"
+              justifyContent="space-around"
+            >
+              <Grid item>
+                <Typography variant="h4">{`Core ${index}: ${program.name}`}</Typography>
+              </Grid>
+              <Grid item>
+                <Instructions
+                  core={core}
+                  labels={core.labels}
+                  instructions={core.program.instructions}
+                ></Instructions>
+              </Grid>
+              <Grid item container>
+                <Grid item xs={12}>
+                  <Registers registers={core.registers}></Registers>
+                </Grid>
+              </Grid>
             </Grid>
-          </Grid>
+          </Paper>
         </Grid>
       </Grid>
     </>

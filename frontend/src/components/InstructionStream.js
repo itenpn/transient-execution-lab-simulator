@@ -1,12 +1,24 @@
-import { instructionToString } from "../logic/Instructions";
-import { FixedSizeList } from "react-window";
 import { useEffect, useRef, useState } from "react";
 
 import { Box, ListItem, ListItemText } from "@mui/material";
+import { FixedSizeList } from "react-window";
+
+import { instructionToString } from "../logic/Instructions";
 
 export default function InstructionStream(props) {
   const { stream } = props;
-  const reversed = stream.slice().reverse();
+
+  const [windowSize, setWindowSize] = useState([window.innerWidth, window.innerHeight]);
+
+  useEffect(() => {
+    const handleWindowResize = (e) => {
+      setWindowSize([e.target.innerWidth, e.target.innerHeight]);
+    };
+    window.addEventListener("resize", handleWindowResize);
+    return () => {
+      window.removeEventListener("resize", handleWindowResize);
+    };
+  }, []);
 
   const listRef = useRef();
 
@@ -55,7 +67,7 @@ export default function InstructionStream(props) {
   return (
     <Box sx={{ width: "100%", height: 960 }}>
       <FixedSizeList
-        height={960}
+        height={windowSize[1] - 100}
         width="100%"
         itemSize={32}
         itemCount={stream.length}

@@ -46,19 +46,17 @@ export default function Instructions(props) {
           <Grid container direction="row">
             {instructions.map((instruction, index) => {
               return (
-                <>
-                  <Grid item xs={12} container key={index} alignItems="center">
-                    <Grid item xs={6} container justifyContent="flex-end" alignItems="center">
-                      <LabelCell index={index} />
-                    </Grid>
-                    <Grid item xs={6} container alignItems="center">
-                      <InstructionCell instruction={instruction} index={index} />
-                    </Grid>
-                    <Grid item xs={12}>
-                      <Divider />
-                    </Grid>
+                <Grid item xs={12} container alignItems="center" key={index}>
+                  <Grid item xs={6} container justifyContent="flex-end" alignItems="center">
+                    <LabelCell index={index} />
                   </Grid>
-                </>
+                  <Grid item xs={6} container alignItems="center">
+                    <InstructionCell instruction={instruction} index={index} />
+                  </Grid>
+                  <Grid item xs={12}>
+                    <Divider />
+                  </Grid>
+                </Grid>
               );
             })}
           </Grid>

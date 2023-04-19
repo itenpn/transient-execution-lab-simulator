@@ -153,7 +153,7 @@ export default function Simulation() {
   if (!cpu) {
     return (
       <Typography>
-        No programs selected, go to <Link to="/select">select</Link> to choose programs.
+        No programs selected, go to <Link to="/">select</Link> to choose programs.
       </Typography>
     );
   }
