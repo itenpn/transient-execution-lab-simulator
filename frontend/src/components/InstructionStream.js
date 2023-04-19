@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 
-import { Box, ListItem, ListItemText } from "@mui/material";
+import { Box, ListItem, ListItemText, Paper, Grid, Typography } from "@mui/material";
 import { FixedSizeList } from "react-window";
 
 import { instructionToString } from "../logic/Instructions";
@@ -65,17 +65,22 @@ export default function InstructionStream(props) {
   }
 
   return (
-    <Box sx={{ width: "100%", height: 960 }}>
-      <FixedSizeList
-        height={windowSize[1] - 100}
-        width="100%"
-        itemSize={32}
-        itemCount={stream.length}
-        overscanCount={10}
-        ref={listRef}
-      >
-        {renderRow}
-      </FixedSizeList>
+    <Box sx={{ width: "100%" }}>
+      <Paper elevation={10}>
+        <Grid container justifyContent="center">
+          <Typography variant="h5">Instruction Stream</Typography>
+        </Grid>
+        <FixedSizeList
+          height={windowSize[1] - 100}
+          width="100%"
+          itemSize={32}
+          itemCount={stream.length}
+          overscanCount={10}
+          ref={listRef}
+        >
+          {renderRow}
+        </FixedSizeList>
+      </Paper>
     </Box>
   );
 }

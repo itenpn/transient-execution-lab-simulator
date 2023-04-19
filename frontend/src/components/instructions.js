@@ -1,6 +1,7 @@
 import { Grid, Box, Divider, Typography } from "@mui/material";
 
 import { instructionToString } from "../logic/Instructions";
+import { stringifyData } from "../logic/util";
 
 export default function Instructions(props) {
   const { core, instructions, labels } = props;
@@ -11,7 +12,7 @@ export default function Instructions(props) {
     return (
       <Grid container direction="row" alignItems="flex-end" justifyContent="space-between">
         <Box sx={{ fontFamily: "Monospace" }} component="span" pr={2}>
-          {index}
+          {stringifyData(index, 10, Math.ceil(Math.log(instructions.length + 1)) - 1, "\xa0")}
         </Box>
         <Box sx={{ fontFamily: "Monospace" }} component="span" pr={2}>
           {labelsForIndex.map((label) => label.name).join(", ")}
