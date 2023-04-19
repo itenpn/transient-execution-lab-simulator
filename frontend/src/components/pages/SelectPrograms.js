@@ -23,7 +23,7 @@ import { inlineDelete, sleep } from "../../logic/util";
 import { global } from "../../logic/global";
 
 function FileCard(props) {
-  const { file, removeFile } = props;
+  const { file, removeFile, isVictim } = props;
 
   const [isError, setIsError] = useState(true);
   const [showProgramText, setShowProgramText] = useState(false);
@@ -31,6 +31,7 @@ function FileCard(props) {
   const [errorText, setErrorText] = useState("");
 
   const doParse = () => {
+    if (!file) return;
     const reader = new FileReader();
     reader.onload = (e) => {
       const text = e.target.result;
@@ -53,6 +54,8 @@ function FileCard(props) {
     doParse();
   }, [doParse]);
 
+  if (!file) return;
+
   return (
     <>
       <Paper elevation={15}>
@@ -68,18 +71,20 @@ function FileCard(props) {
                 </IconButton>
               </Tooltip>
             </Grid>
-            <Grid item lg={1} xs={2}>
-              <Tooltip title="Remove Program">
-                <IconButton
-                  color="primary"
-                  onClick={() => {
-                    removeFile(file);
-                  }}
-                >
-                  <Delete />
-                </IconButton>
-              </Tooltip>
-            </Grid>
+            {!isVictim && (
+              <Grid item lg={1} xs={2}>
+                <Tooltip title="Remove Program">
+                  <IconButton
+                    color="primary"
+                    onClick={() => {
+                      removeFile(file);
+                    }}
+                  >
+                    <Delete />
+                  </IconButton>
+                </Tooltip>
+              </Grid>
+            )}
           </Grid>
           <Grid item>
             <LabeledInline labelText="Parse Status">
@@ -110,9 +115,15 @@ function FileCard(props) {
 }
 
 export default function SelectPrograms(props) {
+  const [victimFile, setVictimFile] = useState(null);
   const [files, setFiles] = useState([]);
 
   const navigate = useNavigate();
+
+  const onChangeVictim = (e) => {
+    const newVictim = Array.from(e.target.files)[0];
+    setVictimFile(newVictim);
+  };
 
   const onChange = (e) => {
     const newFiles = Array.from(e.target.files);
@@ -125,13 +136,14 @@ export default function SelectPrograms(props) {
   };
 
   const removeFile = (file) => {
-    setFiles(inlineDelete(files, file, "name"));
+    setFiles(inlineDelete(files, file, "key"));
   };
 
   const startSimulation = async () => {
-    const done = files.map((_) => false);
-    const programs = files.map((_) => null);
-    const readers = files.map((_) => new FileReader());
+    const allFiles = [victimFile].concat(files);
+    const done = allFiles.map((_) => false);
+    const programs = allFiles.map((_) => null);
+    const readers = allFiles.map((_) => new FileReader());
     readers.forEach((reader, index) => {
       reader.onload = (e) => {
         const text = e.target.result;
@@ -145,7 +157,7 @@ export default function SelectPrograms(props) {
       };
     });
     for (let i = 0; i < readers.length; i++) {
-      readers[i].readAsText(files[i]);
+      readers[i].readAsText(allFiles[i]);
     }
     while (!done.every((p) => p)) {
       // Terrible handling of event-based code -- just sleep till every program is parsed
@@ -178,19 +190,27 @@ export default function SelectPrograms(props) {
 
           <Grid item container justifyContent="center" xs={4}>
             <Button variant="contained" component="label">
-              Add Programs
+              Select Victim
+              <input type="file" accept=".rrisc" hidden onChange={onChangeVictim} />
+            </Button>
+          </Grid>
+          <Grid item container justifyContent="center" xs={4}>
+            <Button variant="contained" component="label">
+              Add Other Programs
               <input type="file" accept=".rrisc" multiple hidden onChange={onChange} />
             </Button>
           </Grid>
           <Grid item container justifyContent="center" xs={4}>
-            <Button
-              variant="contained"
-              component="label"
-              disabled={files.length === 0}
-              onClick={startSimulation}
-            >
+            <Button variant="contained" component="label" onClick={startSimulation}>
               Start Simulation
             </Button>
+          </Grid>
+        </Grid>
+      </Paper>
+      <Paper elevation={10}>
+        <Grid container direction="row" alignItems="center" justifyContent="center">
+          <Grid item xs={6}>
+            <FileCard file={victimFile} isVictim></FileCard>
           </Grid>
         </Grid>
       </Paper>

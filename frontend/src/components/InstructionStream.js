@@ -70,16 +70,18 @@ export default function InstructionStream(props) {
         <Grid container justifyContent="center">
           <Typography variant="h5">Instruction Stream</Typography>
         </Grid>
-        <FixedSizeList
-          height={windowSize[1] - 100}
-          width="100%"
-          itemSize={32}
-          itemCount={stream.length}
-          overscanCount={10}
-          ref={listRef}
-        >
-          {renderRow}
-        </FixedSizeList>
+        <Paper elevation={10}>
+          <FixedSizeList
+            height={windowSize[1] - 180}
+            width="100%"
+            itemSize={32}
+            itemCount={stream.length}
+            overscanCount={10}
+            ref={listRef}
+          >
+            {renderRow}
+          </FixedSizeList>
+        </Paper>
       </Paper>
     </Box>
   );
