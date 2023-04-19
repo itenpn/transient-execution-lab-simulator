@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { Link } from "react-router-dom";
 
 import { Box, Tooltip, Paper, Grid, Typography, IconButton, Button } from "@mui/material";
@@ -16,6 +16,7 @@ import PowerSettingsNewIcon from "@mui/icons-material/PowerSettingsNew";
 import { range } from "../../logic/util";
 import { global } from "../../logic/global";
 import { stringifyData } from "../../logic/util";
+import SimpleTextInput from "../util/SimpleTextInput";
 import Core from "../core";
 
 function Cache(props) {
@@ -64,6 +65,7 @@ function Cache(props) {
 export default function Simulation() {
   const [coreIndex, setCoreIndex] = useState(0);
   const [falseState, setFalseState] = useState(0);
+  const cpuRepeatCountRef = useRef();
 
   const cpu = global?.cpu;
   const height = 16;
@@ -78,19 +80,25 @@ export default function Simulation() {
   }
 
   const cycleCpu = () => {
-    try {
-      cpu.nextCycle();
-    } catch (ex) {
-      console.error(ex);
+    const count = Number(cpuRepeatCountRef.current.value);
+    for (let i = 0; i < count; i++) {
+      try {
+        cpu.nextCycle();
+      } catch (ex) {
+        console.error(ex);
+      }
     }
     setFalseState(falseState + 1);
   };
 
   const commitCpu = () => {
-    try {
-      while (cpu.getRunningStatus()[coreIndex] && !cpu.nextCycle()[coreIndex]) {}
-    } catch (ex) {
-      console.error(ex);
+    const count = Number(cpuRepeatCountRef.current.value);
+    for (let i = 0; i < count; i++) {
+      try {
+        while (cpu.getRunningStatus()[coreIndex] && !cpu.nextCycle()[coreIndex]) {}
+      } catch (ex) {
+        console.error(ex);
+      }
     }
     setFalseState(falseState + 1);
   };
@@ -100,6 +108,14 @@ export default function Simulation() {
     setFalseState(falseState + 1);
   };
   console.log(cpu);
+
+  const determineRepeatCountValue = () => {
+    const num = Number(cpuRepeatCountRef?.current?.value);
+    if (Number.isNaN(num) || num <= 0) {
+      return 1;
+    }
+    return num;
+  };
 
   function Controls() {
     return (
@@ -138,6 +154,16 @@ export default function Simulation() {
               </IconButton>
             </span>
           </Tooltip>
+        </Grid>
+        <Grid item xs={3}>
+          <SimpleTextInput
+            field="cpu-repeat-count"
+            label="CPU Repeat Count"
+            type="number"
+            defaultValue={determineRepeatCountValue()}
+            inputProps={{ min: 1 }}
+            ref={cpuRepeatCountRef}
+          ></SimpleTextInput>
         </Grid>
         <Grid item xs={1}>
           <Tooltip title="Next Cycle">

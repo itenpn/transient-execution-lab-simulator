@@ -41,10 +41,10 @@ export default function InstructionStream(props) {
   }
 
   function renderRow(props) {
-    const { index, key, style } = props;
+    const { index, style } = props;
 
     return (
-      <ListItem key={key} style={style} component="div" disableGutters disablePadding>
+      <ListItem key={index} style={style} component="div" disableGutters disablePadding>
         <ListItemText>
           <InstructionCell instruction={stream[index]}></InstructionCell>
         </ListItemText>
