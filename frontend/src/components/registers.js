@@ -6,6 +6,7 @@ import TableContainer from "@mui/material/TableContainer";
 import TableRow from "@mui/material/TableRow";
 
 import { range, stringifyData } from "../logic/util";
+import TallPaper from "./util/TallPaper";
 
 export default function Registers(props) {
   const { registers } = props;
@@ -51,7 +52,7 @@ export default function Registers(props) {
           <Typography variant="h5" pt={2}>
             Register Content
           </Typography>
-          <TableContainer component={Paper}>
+          <TableContainer component={TallPaper}>
             <Table padding="checkbox">
               <TableBody>
                 <RegisterRow row={0}></RegisterRow>
