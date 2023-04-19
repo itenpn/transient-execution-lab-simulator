@@ -78,6 +78,8 @@ const GlobalCpuState = (props) => {
     3: "ST",
   };
 
+  const prettySecret = stringifyData(cpu.secret, 16, 2, "0", "0x");
+
   return (
     <Paper elevation={10}>
       <Grid
@@ -95,7 +97,7 @@ const GlobalCpuState = (props) => {
           <LabeledInline labelText="Cycle">{cpu.getCycleNum()}</LabeledInline>
         </Grid>
         <Grid item xs={2}>
-          <LabeledInline labelText="Secret">{`0x${stringifyData(cpu.secret, 16)}`}</LabeledInline>
+          <LabeledInline labelText="Secret">{prettySecret}</LabeledInline>
         </Grid>
       </Grid>
       <Grid item container py={1} justifyContent="space-around">
@@ -143,6 +145,7 @@ const GlobalCpuState = (props) => {
 export default function Simulation() {
   const [coreIndex, setCoreIndex] = useState(0);
   const [falseState, setFalseState] = useState(0);
+  const [errorText, setErrorText] = useState("");
   const cpuRepeatCountRef = useRef();
 
   const cpu = global?.cpu;
@@ -162,6 +165,7 @@ export default function Simulation() {
         cpu.nextCycle();
       } catch (ex) {
         console.error(ex);
+        setErrorText(ex.message);
       }
     }
     setFalseState(falseState + 1);
@@ -174,6 +178,7 @@ export default function Simulation() {
         while (cpu.getRunningStatus()[coreIndex] && !cpu.nextCycle()[coreIndex]) {}
       } catch (ex) {
         console.error(ex);
+        setErrorText(ex.message);
       }
     }
     setFalseState(falseState + 1);
@@ -183,7 +188,6 @@ export default function Simulation() {
     cpu.cores[coreIndex].restartCore();
     setFalseState(falseState + 1);
   };
-  console.log(cpu);
 
   const determineRepeatCountValue = () => {
     const num = Number(cpuRepeatCountRef?.current?.value);
@@ -288,6 +292,11 @@ export default function Simulation() {
           </Grid>
           <Grid item>
             <GlobalCpuState cpu={cpu} />
+          </Grid>
+          <Grid item container justifyContent="center">
+            <Box color="error.main">
+              <pre>{errorText}</pre>
+            </Box>
           </Grid>
         </Grid>
       </Grid>

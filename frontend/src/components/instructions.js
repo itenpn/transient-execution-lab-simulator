@@ -1,4 +1,4 @@
-import { Grid, Box } from "@mui/material";
+import { Grid, Box, Divider, Typography } from "@mui/material";
 
 import { instructionToString } from "../logic/Instructions";
 
@@ -9,7 +9,10 @@ export default function Instructions(props) {
     const { index } = props;
     const labelsForIndex = labels.filter((l) => l.index === index);
     return (
-      <Grid container direction="row" alignItems="flex-end" justifyContent="flex-end">
+      <Grid container direction="row" alignItems="flex-end" justifyContent="space-between">
+        <Box sx={{ fontFamily: "Monospace" }} component="span" pr={2}>
+          {index}
+        </Box>
         <Box sx={{ fontFamily: "Monospace" }} component="span" pr={2}>
           {labelsForIndex.map((label) => label.name).join(", ")}
         </Box>
@@ -37,22 +40,30 @@ export default function Instructions(props) {
 
   return (
     <>
-      <Box sx={{ border: 2 }}>
-        <Grid container direction="row">
-          {instructions.map((instruction, index) => {
-            return (
-              <Grid item xs={12} container key={index}>
-                <Grid item xs={6} container justifyContent="flex-end">
-                  <LabelCell index={index} />
-                </Grid>
-                <Grid item xs={6}>
-                  <InstructionCell instruction={instruction} index={index} />
-                </Grid>
-              </Grid>
-            );
-          })}
-        </Grid>
-      </Box>
+      <Grid container justifyContent="center">
+        <Typography variant="h5">Program Instructions</Typography>
+        <Box sx={{ border: 2 }}>
+          <Grid container direction="row">
+            {instructions.map((instruction, index) => {
+              return (
+                <>
+                  <Grid item xs={12} container key={index} alignItems="center">
+                    <Grid item xs={6} container justifyContent="flex-end" alignItems="center">
+                      <LabelCell index={index} />
+                    </Grid>
+                    <Grid item xs={6} container alignItems="center">
+                      <InstructionCell instruction={instruction} index={index} />
+                    </Grid>
+                    <Grid item xs={12}>
+                      <Divider />
+                    </Grid>
+                  </Grid>
+                </>
+              );
+            })}
+          </Grid>
+        </Box>
+      </Grid>
     </>
   );
 }

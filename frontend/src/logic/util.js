@@ -36,8 +36,8 @@ const range = (start, end) => {
  * Takes a number `data`, casts to base `base`, and prepends with "0" until
  * total length is at least `length` characters
  */
-const stringifyData = (data, base, length = 2, paddingChar = "0") => {
-  return data.toString(base).padStart(length, paddingChar);
+const stringifyData = (data, base, length = 2, paddingChar = "0", prepend = "") => {
+  return (prepend + data.toString(base)).padStart(length, paddingChar);
 };
 
 export { inlineReplace, inlineDelete, sleep, range, stringifyData };

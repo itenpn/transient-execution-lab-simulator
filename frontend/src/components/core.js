@@ -1,4 +1,5 @@
 import { Grid, Typography } from "@mui/material";
+
 import Registers from "./registers";
 import Instructions from "./instructions";
 import InstructionStream from "./InstructionStream";
@@ -18,7 +19,7 @@ export default function Core(props) {
           container
           direction="column"
           alignItems="center"
-          justifyContent="space-between"
+          justifyContent="space-around"
         >
           <Grid item>
             <Typography variant="h4">{`Core ${index}: ${program.name}`}</Typography>
@@ -30,8 +31,8 @@ export default function Core(props) {
               instructions={core.program.instructions}
             ></Instructions>
           </Grid>
-          <Grid item container justifyContent="center">
-            <Grid item xs={10}>
+          <Grid item container>
+            <Grid item xs={12}>
               <Registers registers={core.registers}></Registers>
             </Grid>
           </Grid>
