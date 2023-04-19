@@ -11,6 +11,7 @@ import NavigateBeforeIcon from "@mui/icons-material/NavigateBefore";
 import NavigateNextIcon from "@mui/icons-material/NavigateNext";
 import MoveDownIcon from "@mui/icons-material/MoveDown";
 import AutorenewIcon from "@mui/icons-material/Autorenew";
+import PowerSettingsNewIcon from "@mui/icons-material/PowerSettingsNew";
 
 import { range } from "../../logic/util";
 import { global } from "../../logic/global";
@@ -49,11 +50,13 @@ function Cache(props) {
 
   return (
     <>
-      <TableContainer component={Paper}>
-        <Table size="small" padding="none">
-          <TableBody>{[...Array(height).keys()].map(CacheRow)}</TableBody>
-        </Table>
-      </TableContainer>
+      <Grid container>
+        <TableContainer component={Paper}>
+          <Table size="small" padding="none">
+            <TableBody>{[...Array(height).keys()].map(CacheRow)}</TableBody>
+          </Table>
+        </TableContainer>
+      </Grid>
     </>
   );
 }
@@ -75,7 +78,6 @@ export default function Simulation() {
   }
 
   const cycleCpu = () => {
-    console.log("next cycle");
     try {
       cpu.nextCycle();
     } catch (ex) {
@@ -84,7 +86,7 @@ export default function Simulation() {
     setFalseState(falseState + 1);
   };
 
-  const commitCpu = async () => {
+  const commitCpu = () => {
     try {
       while (cpu.getRunningStatus()[coreIndex] && !cpu.nextCycle()[coreIndex]) {}
     } catch (ex) {
@@ -93,7 +95,67 @@ export default function Simulation() {
     setFalseState(falseState + 1);
   };
 
+  const resetCore = () => {
+    cpu.cores[coreIndex].restartCore();
+    setFalseState(falseState + 1);
+  };
   console.log(cpu);
+
+  function Controls() {
+    return (
+      <Grid item container direction="row" alignItems="center" justifyContent="flex-end">
+        <Grid item xs={1}>
+          <Tooltip title="Previous Core">
+            <span>
+              <IconButton
+                color="primary"
+                onClick={() => setCoreIndex(coreIndex - 1)}
+                disabled={coreIndex === 0}
+              >
+                <NavigateBeforeIcon />
+              </IconButton>
+            </span>
+          </Tooltip>
+        </Grid>
+        <Grid item xs={1}>
+          <Tooltip title="Next Core">
+            <span>
+              <IconButton
+                color="primary"
+                onClick={() => setCoreIndex(coreIndex + 1)}
+                disabled={coreIndex === cpu.num_cores - 1}
+              >
+                <NavigateNextIcon />
+              </IconButton>
+            </span>
+          </Tooltip>
+        </Grid>
+        <Grid item xs={1}>
+          <Tooltip title="Reset Core">
+            <span>
+              <IconButton color="primary" onClick={resetCore}>
+                <PowerSettingsNewIcon />
+              </IconButton>
+            </span>
+          </Tooltip>
+        </Grid>
+        <Grid item xs={1}>
+          <Tooltip title="Next Cycle">
+            <IconButton color="primary" onClick={cycleCpu}>
+              <AutorenewIcon />
+            </IconButton>
+          </Tooltip>
+        </Grid>
+        <Grid item xs={1}>
+          <Tooltip title="Next Commit">
+            <IconButton color="primary" onClick={commitCpu}>
+              <MoveDownIcon />
+            </IconButton>
+          </Tooltip>
+        </Grid>
+      </Grid>
+    );
+  }
 
   return (
     <>
@@ -105,53 +167,12 @@ export default function Simulation() {
             index={coreIndex}
           />
         </Grid>
-        <Grid item xs={3.6} container direction="column">
-          <Grid item container direction="row" alignItems="center" justifyContent="flex-end">
-            <Grid item xs={1}>
-              <Tooltip title="Previous Core">
-                <span>
-                  <IconButton
-                    color="primary"
-                    onClick={() => setCoreIndex(coreIndex - 1)}
-                    disabled={coreIndex === 0}
-                  >
-                    <NavigateBeforeIcon />
-                  </IconButton>
-                </span>
-              </Tooltip>
-            </Grid>
-            <Grid item xs={1}>
-              <Tooltip title="Next Core">
-                <span>
-                  <IconButton
-                    color="primary"
-                    onClick={() => setCoreIndex(coreIndex + 1)}
-                    disabled={coreIndex === cpu.num_cores - 1}
-                  >
-                    <NavigateNextIcon />
-                  </IconButton>
-                </span>
-              </Tooltip>
-            </Grid>
-            <Grid item xs={7} container justifyContent="center">
+        <Grid item xs={4} container direction="column">
+          <Grid item>
+            <Controls />
+            <Grid item container justifyContent="center">
               <Typography variant="h5">Cache Content</Typography>
             </Grid>
-            <Grid item xs={1}>
-              <Tooltip title="Next Cycle">
-                <IconButton color="primary" onClick={cycleCpu}>
-                  <AutorenewIcon />
-                </IconButton>
-              </Tooltip>
-            </Grid>
-            <Grid item xs={1}>
-              <Tooltip title="Next Commit">
-                <IconButton color="primary" onClick={commitCpu}>
-                  <MoveDownIcon />
-                </IconButton>
-              </Tooltip>
-            </Grid>
-          </Grid>
-          <Grid item>
             <Cache cache={cpu.getCacheRep()} height={height} width={width}></Cache>
           </Grid>
         </Grid>

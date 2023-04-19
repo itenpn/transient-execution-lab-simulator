@@ -1,4 +1,4 @@
-import { Box, Paper } from "@mui/material";
+import { Grid, Box, Paper } from "@mui/material";
 import Table from "@mui/material/Table";
 import TableBody from "@mui/material/TableBody";
 import TableCell from "@mui/material/TableCell";
@@ -46,20 +46,22 @@ export default function Registers(props) {
   return (
     <>
       <Box sx={{ width: 1 }}>
-        <TableContainer component={Paper}>
-          <Table padding="checkbox">
-            <TableBody>
-              <RegisterRow row={0}></RegisterRow>
-              <RegisterRow row={1}></RegisterRow>
-              <RegisterRow row={2}></RegisterRow>
-              <RegisterRow row={3}></RegisterRow>
-              <RegisterRow row={4}></RegisterRow>
-              <RegisterRow row={5}></RegisterRow>
-              <RegisterRow row={6}></RegisterRow>
-              <RegisterRow row={7}></RegisterRow>
-            </TableBody>
-          </Table>
-        </TableContainer>
+        <Grid container>
+          <TableContainer component={Paper}>
+            <Table padding="checkbox">
+              <TableBody>
+                <RegisterRow row={0}></RegisterRow>
+                <RegisterRow row={1}></RegisterRow>
+                <RegisterRow row={2}></RegisterRow>
+                <RegisterRow row={3}></RegisterRow>
+                <RegisterRow row={4}></RegisterRow>
+                <RegisterRow row={5}></RegisterRow>
+                <RegisterRow row={6}></RegisterRow>
+                <RegisterRow row={7}></RegisterRow>
+              </TableBody>
+            </Table>
+          </TableContainer>
+        </Grid>
       </Box>
     </>
   );
