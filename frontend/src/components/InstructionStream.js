@@ -1,12 +1,29 @@
-import { Grid, Box } from "@mui/material";
-
 import { instructionToString } from "../logic/Instructions";
+import { FixedSizeList } from "react-window";
+import { useEffect, useRef, useState } from "react";
+
+import { Box, ListItem, ListItemText } from "@mui/material";
 
 export default function InstructionStream(props) {
   const { stream } = props;
+  const reversed = stream.slice().reverse();
+
+  const listRef = useRef();
+
+  const scrollToBottom = () => {
+    if (listRef?.current) {
+      listRef.current.scrollToItem(stream.length);
+    }
+  };
+
+  useEffect(() => {
+    scrollToBottom();
+  }, [stream.length]);
 
   function InstructionCell(props) {
     const { instruction } = props;
+
+    if (!instruction) return;
 
     let styling = { fontFamily: "Monospace" };
     if (instruction.errorBranchPrediction) {
@@ -23,19 +40,30 @@ export default function InstructionStream(props) {
     );
   }
 
+  function renderRow(props) {
+    const { index, key, style } = props;
+
+    return (
+      <ListItem key={key} style={style} component="div" disableGutters disablePadding>
+        <ListItemText>
+          <InstructionCell instruction={stream[index]}></InstructionCell>
+        </ListItemText>
+      </ListItem>
+    );
+  }
+
   return (
-    <>
-      <Box sx={{ border: 2 }}>
-        <Grid container direction="row">
-          {stream.map((instruction, index) => {
-            return (
-              <Grid item xs={12} key={index}>
-                <InstructionCell instruction={instruction} />
-              </Grid>
-            );
-          })}
-        </Grid>
-      </Box>
-    </>
+    <Box sx={{ width: "100%", height: 960 }}>
+      <FixedSizeList
+        height={960}
+        width="100%"
+        itemSize={32}
+        itemCount={stream.length}
+        overscanCount={10}
+        ref={listRef}
+      >
+        {renderRow}
+      </FixedSizeList>
+    </Box>
   );
 }
