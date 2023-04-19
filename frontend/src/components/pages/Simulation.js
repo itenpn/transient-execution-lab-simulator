@@ -21,6 +21,7 @@ import Core from "../core";
 import LabeledInline from "../util/LabeledInline";
 import TallPaper from "../util/TallPaper";
 import WinDialog from "../WinDialog";
+import LoseDialog from "../LoseDialog";
 
 function Cache(props) {
   const { cache, height, width } = props;
@@ -163,6 +164,7 @@ export default function Simulation() {
 
   const closeBoth = () => {
     setWinDialogOpen(false);
+    setLoseDialogOpen(false);
   };
 
   const checkAndHandleEnd = () => {
@@ -196,6 +198,7 @@ export default function Simulation() {
         while (cpu.getRunningStatus()[coreIndex] && !cpu.nextCycle()[coreIndex]) {
           checkAndHandleEnd();
         }
+        checkAndHandleEnd();
       } catch (ex) {
         console.error(ex);
         setErrorText(ex.message);
@@ -321,7 +324,7 @@ export default function Simulation() {
         </Grid>
       </Grid>
       <WinDialog open={winDialogOpen} onClose={closeBoth} />
-      <WinDialog open={loseDialogOpen} onClose={closeBoth} />
+      <LoseDialog open={loseDialogOpen} onClose={closeBoth} />
     </>
   );
 }
