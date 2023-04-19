@@ -35,6 +35,7 @@ class CoreSim {
     this.updateBranchPredictor = updateBranchPredictor;
     this.cpuExecProgram = cpuExecProgram;
     this.handleSecretCheck = handleSecretCheck;
+    this.nopActive = false;
   }
 
   restartCore() {
@@ -46,19 +47,21 @@ class CoreSim {
     this.instIdCounter = 0;
     this.instPointer = 0;
     this.commitPointer = 0;
+    this.nopActive = false;
   }
 
   nextCycle() {
     const memActions = this.memory.getCurrCycleActions(this.pid);
-    if (this.status) this.findAndAddInstruction();
+    if (this.status && !this.nopActive) this.findAndAddInstruction();
     this.handleInstructions(memActions);
-    this.instPointer++;
+    if (this.status && !this.nopActive) this.instPointer++;
     return this.handleCommit();
   }
 
   handleCommit() {
     if (this.commitPointer >= this.instructionStream.length) return false;
     const toBeCommitted = this.instructionStream[this.commitPointer];
+    //console.log("WANT TO COMMIT ", this.pid, toBeCommitted);
     if (
       toBeCommitted.finished &&
       !toBeCommitted.errorBranchPrediction &&
@@ -193,6 +196,7 @@ class CoreSim {
 
   handleSingleInstruction(instruction) {
     if (instruction.finished) return;
+    //console.log("handling", this.pid, instruction);
     if (instruction.dependencies.length > 0) {
       if (
         instruction.dependencies.filter((dep) => {
@@ -202,8 +206,38 @@ class CoreSim {
       )
         return;
     }
+    if (
+      this.instructionStream
+        .filter((inst) => inst.id < instruction.id)
+        .some(
+          (inst) =>
+            inst.name === "nop" &&
+            !inst.finished &&
+            !inst.errorBranchPrediction &&
+            !inst.errorMemoryAccess
+        )
+    ) {
+      this.nopActive = true;
+      return;
+    } else {
+      this.nopActive = false;
+    }
+    if (instruction.name === "cycletime") {
+      if (
+        this.instructionStream
+          .filter((inst) => inst.id < instruction.id)
+          .some(
+            (inst) =>
+              !inst.finished &&
+              !inst.errorBranchPrediction &&
+              !inst.errorMemoryAccess
+          )
+      )
+        return;
+    }
     switch (instruction.classDef) {
       case INSTRUCTION_CLASS.JUMP:
+        //console.log("JUMP");
         //If we haven't made a prediction yet for the branch, do so now
         if (instruction.prediction === null) {
           const pred = this.predictBranch(instruction.instPointerOriginal);
@@ -267,9 +301,11 @@ class CoreSim {
           );
           instruction.finished = true;
         }
+        //console.log("MATH");
         break;
       case INSTRUCTION_CLASS.MEMORY:
         //If we haven't started the request, we need to queue up the memory sim for it
+        //console.log("MEMORY");
         if (!instruction.memStarted) {
           instruction.memStarted = true;
           instruction.operation(
@@ -286,6 +322,7 @@ class CoreSim {
         break;
       default:
         //handle the other instructions when they finish
+        //console.log("OTHER");
         if (instruction.cyclesLeft <= 0) {
           const retVal = instruction.operation(
             instruction.inputs,
@@ -295,7 +332,8 @@ class CoreSim {
             this.getCycleNum(),
             this.checkSecret.bind(this),
             this.execProgram.bind(this),
-            this.terminate.bind(this)
+            this.terminate.bind(this),
+            this.flush.bind(this)
           );
           instruction.finished = true;
           instruction.terminate = retVal.terminate;
@@ -304,6 +342,7 @@ class CoreSim {
         break;
     }
     instruction.cyclesLeft--;
+    //console.log("finish handling", this.pid, instruction);
   }
 
   writeReg(instId, regNum, data) {
@@ -341,7 +380,7 @@ class CoreSim {
   }
 
   loadSecret(addr) {
-    this.memoruy.loadSecret(addr, this.pid);
+    this.memory.loadSecret(addr, this.pid);
   }
 
   getCycleNum() {

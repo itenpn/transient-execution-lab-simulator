@@ -11,7 +11,7 @@ class CpuSim {
     this.num_cores = programs.length;
     this.programList = programs;
     this.secret = Math.floor(Math.random() * 0xff);
-    this.memory = new MemorySim(this.num_cores);
+    this.memory = new MemorySim(this.num_cores, this.secret);
     this.cycle = 0;
     this.branchPredictor = new Int8Array(10);
     this.lockCheckSecret = false;

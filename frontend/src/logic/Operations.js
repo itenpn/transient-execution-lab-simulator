@@ -5,18 +5,16 @@
 import { INSTRUCTION_INPUT } from "./Instructions";
 
 //MEMORY INSTRUCTIONS
-function handleFlush(params, instId, readReg, writeReg, queueRead, queueWrite, flush, loadSecret) {
-  const cacheLineParam = params[0];
-  let addr = 0;
-  if (cacheLineParam.type === INSTRUCTION_INPUT.REGISTER) {
-    addr = readReg(instId, cacheLineParam.value);
-  } else {
-    addr = cacheLineParam.value;
-  }
-  flush(addr);
-}
-
-function handleLoad(params, instId, readReg, writeReg, queueRead, queueWrite, flush, loadSecret) {
+function handleLoad(
+  params,
+  instId,
+  readReg,
+  writeReg,
+  queueRead,
+  queueWrite,
+  flush,
+  loadSecret
+) {
   const addrParam = params[0];
   let addr = 0;
   if (addrParam.type === INSTRUCTION_INPUT.REGISTER) {
@@ -28,7 +26,16 @@ function handleLoad(params, instId, readReg, writeReg, queueRead, queueWrite, fl
   queueRead(instId, addr, regNum);
 }
 
-function handleStore(params, instId, readReg, writeReg, queueRead, queueWrite, flush, loadSecret) {
+function handleStore(
+  params,
+  instId,
+  readReg,
+  writeReg,
+  queueRead,
+  queueWrite,
+  flush,
+  loadSecret
+) {
   const addrParam = params[1];
   let addr = 0;
   if (addrParam.type === INSTRUCTION_INPUT.REGISTER) {
@@ -211,17 +218,47 @@ function handleShiftR(params, instId, readReg, writeReg) {
 }
 
 //OTHER INSTRUCTIONS
-function handleCycleTime(params, instId, readReg, writeReg, cycle, secret, execProgram, terminate) {
+function handleCycleTime(
+  params,
+  instId,
+  readReg,
+  writeReg,
+  cycle,
+  secret,
+  execProgram,
+  terminate,
+  flush
+) {
   const regNum = params[0].value;
   writeReg(instId, regNum, cycle);
   return { terminate: false, checkPass: false };
 }
 
-function handleNop(params, instId, readReg, writeReg, cycle, secret, execProgram, terminate) {
+function handleNop(
+  params,
+  instId,
+  readReg,
+  writeReg,
+  cycle,
+  secret,
+  execProgram,
+  terminate,
+  flush
+) {
   return { terminate: false, checkPass: false };
 }
 
-function handleCopy(params, instId, readReg, writeReg, cycle, secret, execProgram, terminate) {
+function handleCopy(
+  params,
+  instId,
+  readReg,
+  writeReg,
+  cycle,
+  secret,
+  execProgram,
+  terminate,
+  flush
+) {
   const valParam = params[0];
   const regNum = params[1].value;
   let val = 0;
@@ -234,24 +271,86 @@ function handleCopy(params, instId, readReg, writeReg, cycle, secret, execProgra
   return { terminate: false, checkPass: false };
 }
 
-function handleFault(params, instId, readReg, writeReg, cycle, secret, execProgram, terminate) {
+function handleFault(
+  params,
+  instId,
+  readReg,
+  writeReg,
+  cycle,
+  secret,
+  execProgram,
+  terminate,
+  flush
+) {
   return { terminate: true, checkPass: false };
 }
 
-function handleCheck(params, instId, readReg, writeReg, cycle, secret, execProgram, terminate) {
+function handleCheck(
+  params,
+  instId,
+  readReg,
+  writeReg,
+  cycle,
+  secret,
+  execProgram,
+  terminate,
+  flush
+) {
   const regNum = params[0].value;
   const givenSecret = readReg(instId, regNum);
   const valid = secret(givenSecret);
   return { terminate: true, checkPass: valid };
 }
 
-function handleRet(params, instId, readReg, writeReg, cycle, secret, execProgram, terminate) {
+function handleRet(
+  params,
+  instId,
+  readReg,
+  writeReg,
+  cycle,
+  secret,
+  execProgram,
+  terminate,
+  flush
+) {
   return { terminate: true, checkPass: false };
 }
 
-function handleExec(params, instId, readReg, writeReg, cycle, secret, execProgram, terminate) {
+function handleExec(
+  params,
+  instId,
+  readReg,
+  writeReg,
+  cycle,
+  secret,
+  execProgram,
+  terminate,
+  flush
+) {
   const prog = params[0].value;
   execProgram(prog, instId);
+  return { terminate: false, checkPass: false };
+}
+
+function handleFlush(
+  params,
+  instId,
+  readReg,
+  writeReg,
+  cycle,
+  secret,
+  execProgram,
+  terminate,
+  flush
+) {
+  const cacheLineParam = params[0];
+  let addr = 0;
+  if (cacheLineParam.type === INSTRUCTION_INPUT.REGISTER) {
+    addr = readReg(instId, cacheLineParam.value);
+  } else {
+    addr = cacheLineParam.value;
+  }
+  flush(addr);
   return { terminate: false, checkPass: false };
 }
 
