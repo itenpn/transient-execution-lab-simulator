@@ -14,6 +14,8 @@ class CpuSim {
     this.memory = new MemorySim(this.num_cores);
     this.cycle = 0;
     this.branchPredictor = new Int8Array(10);
+    this.lockCheckSecret = false;
+    this.guessSecretCorrect = false;
 
     this.cores = this.programList.map(
       (prog, index) =>
@@ -25,9 +27,16 @@ class CpuSim {
           this.getCycleNum.bind(this),
           this.predictBranch.bind(this),
           this.updateBranchPredictor.bind(this),
-          this.execProgram.bind(this)
+          this.execProgram.bind(this),
+          this.handleSecretCheck.bind(this)
         )
     );
+  }
+
+  handleSecretCheck(result) {
+    this.lockCheckSecret = true;
+    this.guessSecretCorrect = result;
+    this.cores.forEach((core) => (core.status = false));
   }
 
   getRunningStatus() {
@@ -48,6 +57,7 @@ class CpuSim {
   }
 
   updateBranchPredictor(instId, truth) {
+    if (this.lockCheckSecret) return;
     const history = this.branchPredictor[instId % 10];
     const increment = truth ? 1 : -1;
     if (
@@ -59,6 +69,7 @@ class CpuSim {
   }
 
   nextCycle() {
+    if (this.lockCheckSecret) return false;
     this.memory.nextCycle();
     const commits = this.cores.map((core) => core.nextCycle());
     this.cycle++;
@@ -78,6 +89,7 @@ class CpuSim {
   }
 
   execProgram(programName) {
+    if (this.lockCheckSecret) return;
     const core = this.cores.find((core) => core.program.name === programName);
     core.restartCore();
   }
