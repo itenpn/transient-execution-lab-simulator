@@ -54,7 +54,8 @@ class MemorySim {
               //not in the cache, so grab from main mem then update cache
               actionItem.returnData = this.mem_rep[actionItem.memIndex];
               if (!actionItem.permFailure) {
-                this.cache_rep[actionItem.cacheIndex] = this.mem_rep[actionItem.memIndex];
+                this.cache_rep[actionItem.cacheIndex] =
+                  this.mem_rep[actionItem.memIndex];
                 this.cache_ownership[actionItem.cacheIndex] = actionItem.addr;
               }
             }
@@ -63,9 +64,12 @@ class MemorySim {
         if (actionItem.type === "store") {
           //if outside bounds, we do nothing here, Core should crash upon commit
           if (!actionItem.outsideBounds) {
-            if (this.cache_ownership[actionItem.cacheIndex] === actionItem.addr) {
+            if (
+              this.cache_ownership[actionItem.cacheIndex] === actionItem.addr
+            ) {
               this.cache_rep[actionItem.cacheIndex] = actionItem.data;
-              if (!actionItem.permFailure) this.mem_rep[actionItem.memIndex] = actionItem.data;
+              if (!actionItem.permFailure)
+                this.mem_rep[actionItem.memIndex] = actionItem.data;
             } else {
               if (!actionItem.permFailure) {
                 this.mem_rep[actionItem.memIndex] = actionItem.data;
@@ -92,7 +96,8 @@ class MemorySim {
     const endAddr = startAddr + MAIN_MEMORY_SIZE;
     for (let i = startAddr; i < endAddr; i++) {
       this.mem_rep[this.#convertAddrToIndex[i]] = 0;
-      if (this.cache_ownership[i % 256] === i) this.cache_ownership[i % 256] = 0;
+      if (this.cache_ownership[i % 256] === i)
+        this.cache_ownership[i % 256] = 0;
     }
   }
 
@@ -108,6 +113,13 @@ class MemorySim {
       addr < (pid + 1) * PROCESS_MEM_START;
     const cacheAddr = addr % CACHE_SIZE;
     const inCache = this.cache_ownership[cacheAddr] === addr;
+    console.log(
+      "LOAD REQUESTED",
+      pid,
+      addr.toString(16),
+      "N/A",
+      this.cache_ownership[cacheAddr].toString(16)
+    );
     const cycleWait = inCache ? 1 : 10;
     this.mem_queue.push({
       flavortext: `load ${addr.toString(16)} into R${dest}`,
@@ -136,6 +148,13 @@ class MemorySim {
       addr < (pid + 1) * PROCESS_MEM_START;
     const cacheAddr = addr % CACHE_SIZE;
     const inCache = this.cache_ownership[cacheAddr] === addr;
+    console.log(
+      "STORE REQUESTED",
+      pid,
+      addr.toString(16),
+      data,
+      this.cache_ownership[cacheAddr].toString(16)
+    );
     const cycleWait = inCache ? 1 : 10;
     this.mem_queue.push({
       flavortext: `store ${data.toString(16)} into ${addr.toString(16)}`,
@@ -163,19 +182,21 @@ class MemorySim {
       addr < (pid + 1) * PROCESS_MEM_START;
     const cacheAddr = addr % CACHE_SIZE;
     if (!permFailure) {
-      this.cache_ownership[cacheAddr] = 0;
+      this.cache_ownership[cacheAddr] = addr;
       this.cache_rep[cacheAddr] = 0;
     }
     return permFailure;
   }
 
   loadSecret(addr, pid) {
+    console.log("LOADING SECRET");
     const permFailure = pid !== 0;
     if (!permFailure) {
       this.mem_rep[addr] = this.secret;
       this.cache_rep[addr % 256] = this.secret;
       this.cache_ownership[addr % 256] = addr;
     }
+    console.log(this.cache_rep, this.secret);
     return permFailure;
   }
 }
