@@ -12,6 +12,7 @@ import NavigateNextIcon from "@mui/icons-material/NavigateNext";
 import MoveDownIcon from "@mui/icons-material/MoveDown";
 import AutorenewIcon from "@mui/icons-material/Autorenew";
 import PowerSettingsNewIcon from "@mui/icons-material/PowerSettingsNew";
+import HelpIcon from "@mui/icons-material/Help";
 
 import { range } from "../../logic/util";
 import { global } from "../../logic/global";
@@ -22,6 +23,7 @@ import LabeledInline from "../util/LabeledInline";
 import TallPaper from "../util/TallPaper";
 import WinDialog from "../WinDialog";
 import LoseDialog from "../LoseDialog";
+import HelpDialog from "../HelpDialog";
 
 function Cache(props) {
   const { cache, height, width } = props;
@@ -150,6 +152,8 @@ export default function Simulation() {
   const [errorText, setErrorText] = useState("");
   const [winDialogOpen, setWinDialogOpen] = useState(false);
   const [loseDialogOpen, setLoseDialogOpen] = useState(false);
+  const [helpDialogOpen, setHelpDialogOpen] = useState(false);
+
   const cpuRepeatCountRef = useRef();
 
   const cpu = global?.cpu;
@@ -162,9 +166,10 @@ export default function Simulation() {
     );
   }
 
-  const closeBoth = () => {
+  const closeAll = () => {
     setWinDialogOpen(false);
     setLoseDialogOpen(false);
+    setHelpDialogOpen(false);
   };
 
   const checkAndHandleEnd = () => {
@@ -293,7 +298,18 @@ export default function Simulation() {
               </IconButton>
             </Tooltip>
           </Grid>
-          <Grid item xs={1}></Grid>
+          <Grid item xs={1}>
+            <Tooltip title="Open Help">
+              <IconButton
+                color="primary"
+                onClick={() => {
+                  setHelpDialogOpen(true);
+                }}
+              >
+                <HelpIcon />
+              </IconButton>
+            </Tooltip>
+          </Grid>
         </Grid>
       </Paper>
     );
@@ -323,8 +339,9 @@ export default function Simulation() {
           </Grid>
         </Grid>
       </Grid>
-      <WinDialog open={winDialogOpen} onClose={closeBoth} />
-      <LoseDialog open={loseDialogOpen} onClose={closeBoth} />
+      <WinDialog open={winDialogOpen} onClose={closeAll} />
+      <LoseDialog open={loseDialogOpen} onClose={closeAll} />
+      <HelpDialog open={helpDialogOpen} onClose={closeAll} />
     </>
   );
 }
