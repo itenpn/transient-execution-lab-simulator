@@ -22,10 +22,10 @@ const HelpDialog = (props) => {
         <ul>
           <li>
             <Typography>
-              Keep in mind that a process can only legally access memory 0x100 = 256 bytes of memory
-              corresponding to its core index. For example, process 0 (always the victim) can access
-              memory addresses 0x1000-0x10ff, process 1 can access memory addresses 0x1100-0x11ff,
-              process 2 can access memory addresses 0x1200-0x12ff, etc...
+              Keep in mind that a process can only legally access memory 0x1000 = 4096 bytes of
+              memory corresponding to its core index plus one. For example, process 0 (always the
+              victim) can access memory addresses 0x1000-0x1fff, process 1 can access memory
+              addresses 0x2000-0x2fff, etc...
             </Typography>
           </li>
         </ul>
