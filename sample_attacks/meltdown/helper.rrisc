@@ -2,7 +2,7 @@
 
 /* Step 0, initialize the address we want to steal */
 copy 0x1000, R0     /* R0 = Secret Addr */
-copy 0x3000, R1     /* R1 = Base Addr of helper */
+copy 0x3000, R1     /* R1 = Starting addr of helper */
 exec victim
 nop 5
 

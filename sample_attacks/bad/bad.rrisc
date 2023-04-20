@@ -1,0 +1,9 @@
+;main
+
+copy 0xff, R1
+
+label start
+checksecret R1
+sub R1, 1, R1
+jmp start
+ret
