@@ -201,7 +201,12 @@ export default function SelectPrograms(props) {
             </Button>
           </Grid>
           <Grid item container justifyContent="center" xs={4}>
-            <Button variant="contained" component="label" onClick={startSimulation}>
+            <Button
+              variant="contained"
+              component="label"
+              onClick={startSimulation}
+              disabled={!victimFile || files.length === 0}
+            >
               Start Simulation
             </Button>
           </Grid>
