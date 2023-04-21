@@ -61,6 +61,7 @@ const INSTRUCTIONS = {
       { dependency: WRITE, allowed_types: [REGISTER] },
     ],
     operation: handleAdd,
+    description: "Assigns Input2 <- Input0 + Input1.",
   },
   SUB: {
     name: "sub",
@@ -72,6 +73,7 @@ const INSTRUCTIONS = {
       { dependency: WRITE, allowed_types: [REGISTER] },
     ],
     operation: handleSub,
+    description: "Assigns Input2 <- Input0 - Input1.",
   },
   MUL: {
     name: "mul",
@@ -83,6 +85,7 @@ const INSTRUCTIONS = {
       { dependency: WRITE, allowed_types: [REGISTER] },
     ],
     operation: handleMul,
+    description: "Assigns Input2 <- Input0 * Input1.",
   },
   DIV: {
     name: "div",
@@ -94,6 +97,7 @@ const INSTRUCTIONS = {
       { dependency: WRITE, allowed_types: [REGISTER] },
     ],
     operation: handleDiv,
+    description: "Assigns Input2 <- Input0 / Input1.",
   },
   SHIFTL: {
     name: "shiftl",
@@ -104,6 +108,7 @@ const INSTRUCTIONS = {
       { dependency: WRITE, allowed_types: [REGISTER] },
     ],
     operation: handleShiftL,
+    description: "Assigns Input1 <- Input1 << Input0.",
   },
   SHIFTR: {
     name: "shiftr",
@@ -114,6 +119,7 @@ const INSTRUCTIONS = {
       { dependency: WRITE, allowed_types: [REGISTER] },
     ],
     operation: handleShiftR,
+    description: "Assigns Input1 <- Input1 >> Input0.",
   },
   AND: {
     name: "and",
@@ -125,6 +131,7 @@ const INSTRUCTIONS = {
       { dependency: WRITE, allowed_types: [REGISTER] },
     ],
     operation: handleAnd,
+    description: "Assigns Input2 <- Input0 & Input1.",
   },
   OR: {
     name: "or",
@@ -136,6 +143,7 @@ const INSTRUCTIONS = {
       { dependency: WRITE, allowed_types: [REGISTER] },
     ],
     operation: handleOr,
+    description: "Assigns Input2 <- Input0 | Input1.",
   },
   COPY: {
     name: "copy",
@@ -146,6 +154,7 @@ const INSTRUCTIONS = {
       { dependency: WRITE, allowed_types: [REGISTER] },
     ],
     operation: handleCopy,
+    description: "Assigns (copies) Input1 <- Input0.",
   },
   FLUSH: {
     name: "flush",
@@ -153,6 +162,7 @@ const INSTRUCTIONS = {
     class: OTHER,
     inputs: [{ dependency: READ, allowed_types: [CONSTANT, REGISTER] }],
     operation: handleFlush,
+    description: "Flushes the cache set associated with the address Input0.",
   },
   CYCLETIME: {
     name: "cycletime",
@@ -160,6 +170,7 @@ const INSTRUCTIONS = {
     class: OTHER,
     inputs: [{ dependency: WRITE, allowed_types: [REGISTER] }],
     operation: handleCycleTime,
+    description: "On commit, writes the current cycle number into Input0.",
   },
   NOP: {
     name: "nop",
@@ -167,6 +178,7 @@ const INSTRUCTIONS = {
     class: OTHER,
     inputs: [{ dependency: READ, allowed_types: [REGISTER, CONSTANT] }],
     operation: handleNop,
+    description: "Does nothing for Input0 cycles.",
   },
   FAULT: {
     name: "fault",
@@ -174,6 +186,8 @@ const INSTRUCTIONS = {
     class: OTHER,
     inputs: [],
     operation: handleFault,
+    description:
+      "Induces a fault: no instruction on the same core can commit after this instruction does.",
   },
   CHECKSECRET: {
     name: "checksecret",
@@ -181,6 +195,8 @@ const INSTRUCTIONS = {
     class: OTHER,
     inputs: [{ dependency: READ, allowed_types: [REGISTER] }],
     operation: handleCheck,
+    description:
+      "Compares the value in Input1 to the CPU's secret. If match, induces win condition, otherwise induces lose condition. All CPU execution is stopped after this instruction.",
   },
   RET: {
     name: "ret",
@@ -188,6 +204,8 @@ const INSTRUCTIONS = {
     class: OTHER,
     inputs: [],
     operation: handleRet,
+    description:
+      "After comitting, no more instructions on the same core can dispatch without a core reset.",
   },
   EXEC: {
     name: "exec",
@@ -195,6 +213,7 @@ const INSTRUCTIONS = {
     class: OTHER,
     inputs: [{ dependency: READ, allowed_types: [STRING] }],
     operation: handleExec,
+    description: "Restarts the core running the program with matching Input0.",
   },
   LABEL: {
     name: "label",
@@ -202,6 +221,8 @@ const INSTRUCTIONS = {
     class: OTHER,
     inputs: [{ dependency: READ, allowed_types: [STRING] }],
     operation: () => {},
+    description:
+      "Dummy instruction that is 'compiled' out, only used for specifying targets of jumps.",
   },
   LOAD: {
     name: "load",
@@ -212,6 +233,7 @@ const INSTRUCTIONS = {
       { dependency: WRITE, allowed_types: [REGISTER] },
     ],
     operation: handleLoad,
+    description: "Loads the value at address Input0 into Input1.",
   },
   STORE: {
     name: "store",
@@ -222,6 +244,7 @@ const INSTRUCTIONS = {
       { dependency: READ, allowed_types: [CONSTANT, REGISTER] },
     ],
     operation: handleStore,
+    description: "Stores the value in Input0 at address Input1.",
   },
   LOADSECRET: {
     name: "loadsecret",
@@ -229,6 +252,7 @@ const INSTRUCTIONS = {
     class: MEMORY,
     inputs: [{ dependency: READ, allowed_types: [CONSTANT] }],
     operation: handleLoadSecret,
+    description: "Puts the CPU secret into address Input0.",
   },
   JMPIFZERO: {
     name: "jmpifzero",
@@ -239,6 +263,8 @@ const INSTRUCTIONS = {
       { dependency: READ, allowed_types: [STRING] },
     ],
     operation: handleJmpIfZero,
+    description:
+      "Redirects the program counter to label specified by Input1 if Input0 == 0, otherwise nothing.",
   },
   JMPIFNOTZERO: {
     name: "jmpifnotzero",
@@ -249,6 +275,8 @@ const INSTRUCTIONS = {
       { dependency: READ, allowed_types: [STRING] },
     ],
     operation: handleJmpIfNotZero,
+    description:
+      "Redirects the program counter to label specified by Input1 if Input0 != 0, otherwise nothing.",
   },
   JMP: {
     name: "jmp",
@@ -256,6 +284,7 @@ const INSTRUCTIONS = {
     class: JUMP,
     inputs: [{ dependency: READ, allowed_types: [STRING] }],
     operation: handleJmp,
+    description: "Redirects the program counter to label specified by Input0.",
   },
 };
 
